@@ -11,4 +11,7 @@ Edit in linux CentOS 6.5<br>
  20161118 test
 <br>
 <h2>项目说明：</h2>
-<p>DDosTools：基于java的DOS攻击测试工具</p>
+<ol>
+<li>DDosTools：基于java的DOS攻击测试工具</li>
+<li>Sensitive：Java 词库敏感词过滤工具</li>
+</ol>
