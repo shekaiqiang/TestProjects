@@ -4,7 +4,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -16,9 +15,11 @@ import java.io.InputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import cn.itanken.jcomp.utils.CloseUtil;
@@ -53,13 +54,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	JTextArea compilerText = new JTextArea(); // 编译错误显示区
 	JTextArea dosOutText = new JTextArea(); // 程序的输出信息
 	
-	JTextArea inputFileNameText = new JTextArea(); 
-	JTextArea runFileNameText = new JTextArea();
+	JTextField inputFileNameText = new JTextField(); 
+	JTextField runFileNameText = new JTextField();
 	
 	public MainFrame() {
 		// TODO Auto-generated constructor stub
 		super("简易Java编译工具");
-		try {
+		try { // UI样式
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {}
 		
@@ -79,11 +80,10 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		panOperation.add(btnInputTxt);
 		panOperation.add(btnCompilerText);
 		panOperation.add(btnSeeDoswin);
-		panOperation.add(new Label(" 输入编译文件名（.java）:"));
-		// inputFileNameText.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 0));
+		panOperation.add(new JLabel(" 输入编译文件名（.java）:"));
 		panOperation.add(inputFileNameText);
 		panOperation.add(btnCompiler);
-		panOperation.add(new Label(" 输入应用程序主类名:"));
+		panOperation.add(new JLabel(" 输入应用程序主类名:"));
 		panOperation.add(runFileNameText);
 		panOperation.add(btnRunProm);
 		add(panOperation, "North");
@@ -130,19 +130,20 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 		if(Thread.currentThread() == compiler) {
 			compilerText.setText(null);
 			compilerText.append("开始编译，请稍后..." + StrUtils.LINE_SEPAR);
-			String temp = inputText.getText().trim(); // 获取代码
+			
+			String temp = inputText.getText().trim(); // 获取输入的代码
 			byte[] buffer = temp.getBytes();
 			int b = buffer.length;
 			String fileName = inputFileNameText.getText().trim();
-			
+
 			try {
 				fileSaved = new File(fileName);
 				FileOutputStream writeFile = new FileOutputStream(fileSaved);
+				// System.out.println(new String(buffer));
 				writeFile.write(buffer, 0, b);
 				writeFile.close();
 			} catch (Exception e) {
-				System.out.println("ERROR!");
-				compilerText.append("编译异常：" + StrUtils.LINE_SEPAR + e);
+				compilerText.append("保存.java文件异常：" + StrUtils.LINE_SEPAR + e);
 			}
 			try {
 				// 获得该进程的错误流，才可以知道运行结果到底是失败了还是成功。
@@ -153,9 +154,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 				byte[] arr = new byte[100];
 				int n = 0;
 				boolean flag = true;
-				// 输入错误信息
+				// 输出错误信息
 				while((n = bufIn.read(arr, 0, arr.length)) != -1) {
-					String s = new String(arr, 0, n);
+					String s;
+					if(StrUtils.OS_NAME.contains("Windows")) {
+						s = new String(arr, "GBK"); // windows dos编码默认为GBK
+					} else {
+						s = new String(arr, 0, n); // macos..
+					}
 					compilerText.append(s);
 					if(s != null) {
 						flag = false;
@@ -238,6 +244,13 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 	}
 
 	public static void main(String[] args) {
-		new MainFrame();
+		MainFrame jcFrame = new MainFrame();
+		
+		jcFrame.inputText.setText("public class Test{" + StrUtils.LINE_SEPAR 
+				+ "  public static void main(String[] args) {" + StrUtils.LINE_SEPAR 
+				+ "    System.out.println(\"Hello World!!!这是一个测试程序！！！\");" + StrUtils.LINE_SEPAR 
+				+ "  }" + StrUtils.LINE_SEPAR + "}");
+		jcFrame.inputFileNameText.setText("Test.java");
+		jcFrame.runFileNameText.setText("Test");
 	}
 }
