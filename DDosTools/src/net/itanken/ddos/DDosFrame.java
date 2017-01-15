@@ -71,7 +71,7 @@ public class DDosFrame extends JFrame {
 		jlTestRegex.setSize(105, 25);
 		jlTestRegex.setLocation(20, 20);
 		jlTestRegex.setText("请　求　地　址:");
-		JTextField jtfTestRegex = new JTextField(); // 内容
+		final JTextField jtfTestRegex = new JTextField(); // 内容
 		jtfTestRegex.setText("https://www.baidu.com/");
 		c.add(jtfTestRegex);
 		jtfTestRegex.setSize(300, 25);
@@ -85,7 +85,7 @@ public class DDosFrame extends JFrame {
 		jlDelayStr.setText("线　程　数　量:");
 
         ButtonGroup reqDelayBG = new ButtonGroup();
-        ButtonRadio brDelDef = new ButtonRadio("默认一百");
+        final ButtonRadio brDelDef = new ButtonRadio("默认一百");
         ButtonRadio brDelCus = new ButtonRadio("自定义");
         brDelDef.setSize(90, 20);
         brDelCus.setSize(90, 20);
@@ -97,21 +97,20 @@ public class DDosFrame extends JFrame {
         brDelDef.setLocation(130, 62);
         brDelCus.setLocation(220, 62);
         
-		JTextField jtfTCounStr = new JTextField();
+		final JTextField jtfTCounStr = new JTextField();
 		c.add(jtfTCounStr);
 		jtfTCounStr.setSize(130, 25);
 		jtfTCounStr.setLocation(300, 60);
 		jtfTCounStr.setEnabled(false);
 
 		ChangeListener tCounListener = new ChangeListener() {
-			@Override
 			public void stateChanged(ChangeEvent e) {
 				//取出滑动条的值，并在文本中显示出来  
 				JSlider source = (JSlider) e.getSource();  
 				jtfTCounStr.setText("" + source.getValue());				
 			}
 		};
-		JSlider sliderTCoun = new JSlider(0, 10000);
+		final JSlider sliderTCoun = new JSlider(0, 10000);
 		sliderTCoun.setValue(2000);
 		//设置滑块必须停在刻度处  
 		sliderTCoun.setSnapToTicks(true);  
@@ -129,7 +128,6 @@ public class DDosFrame extends JFrame {
 		sliderTCoun.setEnabled(false);
 
 		brDelDef.addActionListener(new ActionListener() {
-            @Override
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘默认’线程数量");
                 // 使用默认
@@ -139,7 +137,6 @@ public class DDosFrame extends JFrame {
             }
         });
 		brDelCus.addActionListener(new ActionListener() {
-            @Override
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘自定义’线程数量");
                 // 获取自定义的值传递过去
@@ -157,7 +154,7 @@ public class DDosFrame extends JFrame {
 		jlTestStr.setText("单线程请求次数:");
 
         ButtonGroup reqCountBG = new ButtonGroup();
-        ButtonRadio brDef = new ButtonRadio("默认一直");
+        final ButtonRadio brDef = new ButtonRadio("默认一直");
         ButtonRadio brCus = new ButtonRadio("自定义");
         brDef.setSize(90, 20);
         brCus.setSize(90, 20);
@@ -169,21 +166,20 @@ public class DDosFrame extends JFrame {
         brDef.setLocation(130, 142);
         brCus.setLocation(220, 142);
         
-		JTextField jtfTestStr = new JTextField();
+		final JTextField jtfTestStr = new JTextField();
 		c.add(jtfTestStr);
 		jtfTestStr.setSize(130, 25);
 		jtfTestStr.setLocation(300, 140);
     	jtfTestStr.setEnabled(false);
     	 
     	ChangeListener countListener = new ChangeListener() {
-			@Override
 			public void stateChanged(ChangeEvent e) {
 				//取出滑动条的值，并在文本中显示出来  
                 JSlider source = (JSlider) e.getSource();  
                 jtfTestStr.setText("" + source.getValue());				
 			}
         };
-        JSlider sliderCount = new JSlider(0, 1000); 
+        final JSlider sliderCount = new JSlider(0, 1000); 
         sliderCount.setValue(200);
         //设置滑块必须停在刻度处  
         sliderCount.setSnapToTicks(true);  
@@ -201,7 +197,6 @@ public class DDosFrame extends JFrame {
         sliderCount.setEnabled(false);
 
 		brDef.addActionListener(new ActionListener() {
-            @Override
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘默认’请求次数");
                 // 使用默认
@@ -211,7 +206,6 @@ public class DDosFrame extends JFrame {
             }
         });
 		brCus.addActionListener(new ActionListener() {
-            @Override
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘自定义’请求次数");
                 // 获取自定义的值传递过去
@@ -236,9 +230,9 @@ public class DDosFrame extends JFrame {
 		jspInfo.setSize(297, 150);
 		jspInfo.setLocation(130, 220);
 
-		JButton jbRun = new SelJButton("开始");
-		JButton jbStop = new SelJButton("停止");
-		JButton jbExit = new SelJButton("关闭");
+		final JButton jbRun = new SelJButton("开始");
+		final JButton jbStop = new SelJButton("停止");
+		final JButton jbExit = new SelJButton("关闭");
 		c.add(jbRun);
 		jbRun.setSize(75, 25);
 		jbRun.setLocation(130, 380);
@@ -446,7 +440,6 @@ class SelJButton extends JButton {
 /**
  * 自定义下拉框
  */
-@SuppressWarnings("rawtypes")
 class SelJComboBox extends JComboBox {
 	private static final long serialVersionUID = 1L;
 	public SelJComboBox() {
