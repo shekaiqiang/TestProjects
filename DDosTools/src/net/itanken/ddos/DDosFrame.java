@@ -27,11 +27,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.itanken.ddos.utils.ConsoleDialog;
+import net.itanken.ddos.utils.StrUtils;
 import net.itanken.ddos.utils.ButtonRadio;
 import net.itanken.ddos.utils.CloseUtil;
 
@@ -43,11 +47,13 @@ import net.itanken.ddos.utils.CloseUtil;
  */
 public class DDosFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
-	public static final String title = "[TestTools]DDos · iTanken";
+	public static final String title = "[TestTools]DDos · iTanken.cn";
+	public static JTextArea jtaInfo = new JTextArea();
 	public static DDosFrame ddos = new DDosFrame("");
     public static ConsoleDialog console = new ConsoleDialog(title, false);
+	private DDos dos = null;
 
-    public DDosFrame(String sTit) {
+	public DDosFrame(String sTit) {
 		super("".equals(sTit) ? title : sTit); // 程序 标题
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -62,47 +68,145 @@ public class DDosFrame extends JFrame {
 		// 请求地址
 		JLabel jlTestRegex = new SelJLabel(); // 标题
 		c.add(jlTestRegex);
-		jlTestRegex.setSize(100, 25);
+		jlTestRegex.setSize(105, 25);
 		jlTestRegex.setLocation(20, 20);
-		jlTestRegex.setText(" 请 求 地 址：");
+		jlTestRegex.setText("请　求　地　址:");
 		JTextField jtfTestRegex = new JTextField(); // 内容
 		jtfTestRegex.setText("https://www.baidu.com/");
 		c.add(jtfTestRegex);
 		jtfTestRegex.setSize(300, 25);
 		jtfTestRegex.setLocation(130, 20);
 		
+		// 请求间隔
+		JLabel jlDelayStr = new SelJLabel();
+		c.add(jlDelayStr);
+		jlDelayStr.setSize(105, 25);
+		jlDelayStr.setLocation(20, 60);
+		jlDelayStr.setText("线　程　数　量:");
+
+        ButtonGroup reqDelayBG = new ButtonGroup();
+        ButtonRadio brDelDef = new ButtonRadio("默认一百");
+        ButtonRadio brDelCus = new ButtonRadio("自定义");
+        brDelDef.setSize(90, 20);
+        brDelCus.setSize(90, 20);
+        reqDelayBG.add(brDelDef);
+        reqDelayBG.add(brDelCus);
+        brDelDef.setSelected(true);
+        c.add(brDelDef);
+        c.add(brDelCus);
+        brDelDef.setLocation(130, 62);
+        brDelCus.setLocation(220, 62);
+        
+		JTextField jtfTCounStr = new JTextField();
+		c.add(jtfTCounStr);
+		jtfTCounStr.setSize(130, 25);
+		jtfTCounStr.setLocation(300, 60);
+		jtfTCounStr.setEnabled(false);
+
+		ChangeListener tCounListener = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				//取出滑动条的值，并在文本中显示出来  
+				JSlider source = (JSlider) e.getSource();  
+				jtfTCounStr.setText("" + source.getValue());				
+			}
+		};
+		JSlider sliderTCoun = new JSlider(0, 10000);
+		sliderTCoun.setValue(2000);
+		//设置滑块必须停在刻度处  
+		sliderTCoun.setSnapToTicks(true);  
+		//设置绘制刻度  
+		sliderTCoun.setPaintTicks(true);  
+		//设置主、次刻度的间距  
+		sliderTCoun.setMajorTickSpacing(2000);  
+		sliderTCoun.setMinorTickSpacing(500);  
+		//设置绘制刻度标签，默认绘制数值刻度标签  
+		sliderTCoun.setPaintLabels(true);  
+		sliderTCoun.addChangeListener(tCounListener);
+		c.add(sliderTCoun);
+		sliderTCoun.setSize(200, 40);
+		sliderTCoun.setLocation(220, 90);
+		sliderTCoun.setEnabled(false);
+
+		brDelDef.addActionListener(new ActionListener() {
+            @Override
+			public void actionPerformed(ActionEvent arg0) {
+            	DDosFrame.console.showLog("已选中 ‘默认’线程数量");
+                // 使用默认
+            	// jtfTCounStr.setEnabled(false);
+                sliderTCoun.setEnabled(false);
+            	jtfTCounStr.setText("");
+            }
+        });
+		brDelCus.addActionListener(new ActionListener() {
+            @Override
+			public void actionPerformed(ActionEvent arg0) {
+            	DDosFrame.console.showLog("已选中 ‘自定义’线程数量");
+                // 获取自定义的值传递过去
+            	// jtfTCounStr.setEnabled(true);
+                sliderTCoun.setEnabled(true);
+                jtfTCounStr.setText("" + sliderTCoun.getValue());
+            }
+        });
+		
 		// 请求次数
 		JLabel jlTestStr = new SelJLabel();
 		c.add(jlTestStr);
-		jlTestStr.setSize(100, 25);
-		jlTestStr.setLocation(20, 60);
-		jlTestStr.setText(" 请 求 次 数：");
+		jlTestStr.setSize(105, 25);
+		jlTestStr.setLocation(20, 140);
+		jlTestStr.setText("单线程请求次数:");
 
         ButtonGroup reqCountBG = new ButtonGroup();
-        ButtonRadio brDef = new ButtonRadio("默 认");
-        ButtonRadio brCus = new ButtonRadio("自 定 义");
-        brDef.setSize(80, 20);
+        ButtonRadio brDef = new ButtonRadio("默认一直");
+        ButtonRadio brCus = new ButtonRadio("自定义");
+        brDef.setSize(90, 20);
         brCus.setSize(90, 20);
         reqCountBG.add(brDef);
         reqCountBG.add(brCus);
         brDef.setSelected(true);
         c.add(brDef);
         c.add(brCus);
-        brDef.setLocation(130, 62);
-        brCus.setLocation(220, 62);
+        brDef.setLocation(130, 142);
+        brCus.setLocation(220, 142);
         
 		JTextField jtfTestStr = new JTextField();
 		c.add(jtfTestStr);
 		jtfTestStr.setSize(130, 25);
-		jtfTestStr.setLocation(300, 60);
+		jtfTestStr.setLocation(300, 140);
     	jtfTestStr.setEnabled(false);
+    	 
+    	ChangeListener countListener = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				//取出滑动条的值，并在文本中显示出来  
+                JSlider source = (JSlider) e.getSource();  
+                jtfTestStr.setText("" + source.getValue());				
+			}
+        };
+        JSlider sliderCount = new JSlider(0, 1000); 
+        sliderCount.setValue(200);
+        //设置滑块必须停在刻度处  
+        sliderCount.setSnapToTicks(true);  
+        //设置绘制刻度  
+        sliderCount.setPaintTicks(true);  
+        //设置主、次刻度的间距  
+        sliderCount.setMajorTickSpacing(200);  
+        sliderCount.setMinorTickSpacing(50);  
+        //设置绘制刻度标签，默认绘制数值刻度标签  
+        sliderCount.setPaintLabels(true);  
+        sliderCount.addChangeListener(countListener);
+        c.add(sliderCount);
+        sliderCount.setSize(200, 40);
+        sliderCount.setLocation(220, 170);
+        sliderCount.setEnabled(false);
 
 		brDef.addActionListener(new ActionListener() {
             @Override
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘默认’请求次数");
                 // 使用默认
-            	jtfTestStr.setEnabled(false);
+            	//jtfTestStr.setEnabled(false);
+                sliderCount.setEnabled(false);
             	jtfTestStr.setText("");
             }
         });
@@ -111,100 +215,74 @@ public class DDosFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
             	DDosFrame.console.showLog("已选中 ‘自定义’请求次数");
                 // 获取自定义的值传递过去
-            	jtfTestStr.setEnabled(true);
+            	//jtfTestStr.setEnabled(true);
+                sliderCount.setEnabled(true);
+                jtfTestStr.setText("" + sliderCount.getValue());
             	
-            }
-        });
-		
-		// 请求间隔
-		JLabel jlDelayStr = new SelJLabel();
-		c.add(jlDelayStr);
-		jlDelayStr.setSize(100, 25);
-		jlDelayStr.setLocation(20, 100);
-		jlDelayStr.setText(" 请 求 间 隔：");
-
-        ButtonGroup reqDelayBG = new ButtonGroup();
-        ButtonRadio brDelDef = new ButtonRadio("默 认");
-        ButtonRadio brDelCus = new ButtonRadio("自 定 义");
-        brDelDef.setSize(80, 20);
-        brDelCus.setSize(90, 20);
-        reqDelayBG.add(brDelDef);
-        reqDelayBG.add(brDelCus);
-        brDelDef.setSelected(true);
-        c.add(brDelDef);
-        c.add(brDelCus);
-        brDelDef.setLocation(130, 102);
-        brDelCus.setLocation(220, 102);
-        
-		JTextField jtfDelayStr = new JTextField();
-		c.add(jtfDelayStr);
-		jtfDelayStr.setSize(130, 25);
-		jtfDelayStr.setLocation(300, 100);
-    	jtfDelayStr.setEnabled(false);
-
-		brDelDef.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent arg0) {
-            	DDosFrame.console.showLog("已选中 ‘默认’请求间隔");
-                // 使用默认
-            	jtfDelayStr.setEnabled(false);
-            	jtfDelayStr.setText("");
-            }
-        });
-		brDelCus.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent arg0) {
-            	DDosFrame.console.showLog("已选中 ‘自定义’请求间隔");
-                // 获取自定义的值传递过去
-            	jtfDelayStr.setEnabled(true);
             }
         });
 		
 		// 请求信息
 		JLabel jlInfoStr = new SelJLabel();
 		c.add(jlInfoStr);
-		jlInfoStr.setSize(100, 25);
-		jlInfoStr.setLocation(20, 140);
-		jlInfoStr.setText(" 请 求 信 息：");
+		jlInfoStr.setSize(105, 25);
+		jlInfoStr.setLocation(20, 220);
+		jlInfoStr.setText("请　求　信　息:");
 
-		JTextArea jtaInfo = new JTextArea();
 		jtaInfo.setEnabled(false);
 		jtaInfo.setBackground(pubColor);
 		JScrollPane jspInfo = new JScrollPane(jtaInfo);
 		c.add(jspInfo);
 		jspInfo.setSize(297, 150);
-		jspInfo.setLocation(130, 140);
+		jspInfo.setLocation(130, 220);
 
 		JButton jbRun = new SelJButton("开始");
 		JButton jbStop = new SelJButton("停止");
+		JButton jbExit = new SelJButton("关闭");
 		c.add(jbRun);
 		jbRun.setSize(75, 25);
-		jbRun.setLocation(130, 300);
+		jbRun.setLocation(130, 380);
 		// 按钮动作监听 
 		jbRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jbRun.setEnabled(false);
-				jbStop.setEnabled(true);
-				
+				if(StrUtils.isEmpty(jtfTestRegex.getText())) {
+					Icon img = new ImageIcon(DDosFrame.class.getResource("res/wen"));
+                	JOptionPane.showMessageDialog (ddos, "　请输入请求地址！", "提示(¬_¬)", JOptionPane.PLAIN_MESSAGE, img);
+				} else {
+					jbRun.setEnabled(false);
+					jbStop.setEnabled(true);
+					jbExit.setEnabled(false);
+					jtaInfo.append("开始DDOS攻击：" + jtfTestRegex.getText() + StrUtils.LINE_SEPAR);
+					try {
+						int tCount = brDelDef.isSelected() ? 100 : sliderTCoun.getValue();
+						int sCount = brDef.isSelected() ? 0 : sliderCount.getValue();
+						dos = new DDos();
+						dos.doDDos(tCount, sCount);
+					} catch (InterruptedException e1) {
+						console.showError(e1);
+					}
+				}
 			}
 		});
 		c.add(jbStop);
 		jbStop.setSize(75, 25);
-		jbStop.setLocation(230, 300);
+		jbStop.setLocation(230, 380);
 		jbStop.setEnabled(false);
 		// 按钮动作监听 
 		jbStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				jbRun.setEnabled(true);
 				jbStop.setEnabled(false);
-				
+				jbExit.setEnabled(true);
+				if(dos.stopDDos()) {
+					jtaInfo.append("停止成功！" + StrUtils.LINE_SEPAR);
+				}
 			}
 		});
 
-		JButton jbExit = new SelJButton("关闭");
 		c.add(jbExit);
 		jbExit.setSize(75, 25);
-		jbExit.setLocation(330, 300);
+		jbExit.setLocation(330, 380);
 		// 按钮动作监听 
 		jbExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -216,11 +294,11 @@ public class DDosFrame extends JFrame {
 		JLabel jlTankenUri = new iTankenJLabel();
 		c.add(jlTankenUri);
 		jlTankenUri.setSize(100, 100);
-		jlTankenUri.setLocation(20, 180);
+		jlTankenUri.setLocation(20, 260);
 
 		super.setIconImage(new ImageIcon(DDosFrame.class.getResource("res/logo.png")).getImage());
 		super.setLocation(136, 64); // 设置窗口位置
-		super.setSize(460, 360); // 设置窗口大小
+		super.setSize(460, 440); // 设置窗口大小
 		super.setVisible(true); // 显示窗口
 		super.setDefaultCloseOperation(0); // 取消默认关闭
 		super.addWindowListener(new WindowAdapter() {
@@ -290,7 +368,7 @@ public class DDosFrame extends JFrame {
 	public static void main(String args[]) {
 		DDosFrame rt = ddos;
 		if(rt != null) {
-			console.showLog("欢迎使用iTanken DDos攻击测试工具！更多信息请浏览 http://www.itanken.net/");
+			console.showLog("欢迎使用iTanken DDos攻击测试工具！更多信息请浏览 http://www.zixizixi.com/");
 		}
 	}
 }
@@ -311,7 +389,7 @@ class iTankenJLabel extends JLabel {
 		super.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
         		try {
-        			URI uri = new URI("http://www.itanken.net/");
+        			URI uri = new URI("http://zixizixi.com/");
 					Desktop dtp = Desktop.getDesktop();
 					if(Desktop.isDesktopSupported() && dtp.isSupported(Desktop.Action.BROWSE)){ // 判断是否支持
 						dtp.browse(uri);/*
