@@ -157,7 +157,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示日志信息(GREEN)
 	 * @param log 信息文本
 	 */
-	public void showLog(Object log) {
+	public synchronized void showLog(Object log) {
 		String info = (("调试信息：".equals(log)) ? log.toString() : ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log));
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 102, 0));
@@ -173,7 +173,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示调试信息(BLUE)
 	 * @param log 信息文本
 	 */
-	public void showDebug(Object log) {
+	public synchronized void showDebug(Object log) {
 		String debug = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(51, 0, 255));
@@ -189,7 +189,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示警告信息(ORANGE)
 	 * @param log 信息文本
 	 */
-	public void showWarn(Object log) {
+	public synchronized void showWarn(Object log) {
 		String warn = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 102, 0));
@@ -205,7 +205,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示错误信息(RED)
 	 * @param log 信息文本
 	 */
-	public void showError(Object log) {
+	public synchronized void showError(Object log) {
 		String error = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 0, 51));
@@ -220,7 +220,7 @@ public class ConsoleDialog extends JFrame {
 	/**
 	 * 显示时间信息(BLACK)
 	 */
-	public void showTime() {
+	public synchronized void showTime() {
 		String time = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t");
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 0, 0));

@@ -47,7 +47,7 @@ import net.itanken.ddos.utils.CloseUtil;
  */
 public class DDosFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
-	public static final String title = "[TestTools]DDos · iTanken.cn";
+	public static final String title = "[TestTools]DDos";
 	public static JTextArea jtaInfo = new JTextArea();
 	public static DDosFrame ddos = new DDosFrame("");
     public static ConsoleDialog console = new ConsoleDialog(title, false);
@@ -62,8 +62,6 @@ public class DDosFrame extends JFrame {
 		// get container 容器
 		Container c = getContentPane();
 		c.setLayout(null);
-		// 公用颜色
-		Color pubColor = new Color(240, 240, 240); 
 
 		// 请求地址
 		JLabel jlTestRegex = new SelJLabel(); // 标题
@@ -83,12 +81,12 @@ public class DDosFrame extends JFrame {
 		jlDelayStr.setSize(105, 25);
 		jlDelayStr.setLocation(20, 60);
 		jlDelayStr.setText("线　程　数　量:");
-
+		final int defaultCount = 6;
         ButtonGroup reqDelayBG = new ButtonGroup();
-        final ButtonRadio brDelDef = new ButtonRadio("默认一百");
+        final ButtonRadio brDelDef = new ButtonRadio("默认" + defaultCount + "个");
         ButtonRadio brDelCus = new ButtonRadio("自定义");
         brDelDef.setSize(90, 20);
-        brDelCus.setSize(90, 20);
+        brDelCus.setSize(80, 20);
         reqDelayBG.add(brDelDef);
         reqDelayBG.add(brDelCus);
         brDelDef.setSelected(true);
@@ -110,17 +108,17 @@ public class DDosFrame extends JFrame {
 				jtfTCounStr.setText("" + source.getValue());				
 			}
 		};
-		final JSlider sliderTCoun = new JSlider(0, 10000);
-		sliderTCoun.setValue(2000);
+		final JSlider sliderTCoun = new JSlider(0, 20); // 范围为0~20
+		sliderTCoun.setValue(defaultCount); // 初始值 
 		//设置滑块必须停在刻度处  
 		sliderTCoun.setSnapToTicks(true);  
 		//设置绘制刻度  
 		sliderTCoun.setPaintTicks(true);  
 		//设置主、次刻度的间距  
-		sliderTCoun.setMajorTickSpacing(2000);  
-		sliderTCoun.setMinorTickSpacing(500);  
+		sliderTCoun.setMajorTickSpacing(2);
+		sliderTCoun.setMinorTickSpacing(1); 
 		//设置绘制刻度标签，默认绘制数值刻度标签  
-		sliderTCoun.setPaintLabels(true);  
+		sliderTCoun.setPaintLabels(true);
 		sliderTCoun.addChangeListener(tCounListener);
 		c.add(sliderTCoun);
 		sliderTCoun.setSize(200, 40);
@@ -133,7 +131,7 @@ public class DDosFrame extends JFrame {
                 // 使用默认
             	// jtfTCounStr.setEnabled(false);
                 sliderTCoun.setEnabled(false);
-            	jtfTCounStr.setText("");
+            	jtfTCounStr.setText("" + defaultCount);
             }
         });
 		brDelCus.addActionListener(new ActionListener() {
@@ -157,7 +155,7 @@ public class DDosFrame extends JFrame {
         final ButtonRadio brDef = new ButtonRadio("默认一直");
         ButtonRadio brCus = new ButtonRadio("自定义");
         brDef.setSize(90, 20);
-        brCus.setSize(90, 20);
+        brCus.setSize(80, 20);
         reqCountBG.add(brDef);
         reqCountBG.add(brCus);
         brDef.setSelected(true);
@@ -179,15 +177,15 @@ public class DDosFrame extends JFrame {
                 jtfTestStr.setText("" + source.getValue());				
 			}
         };
-        final JSlider sliderCount = new JSlider(0, 1000); 
-        sliderCount.setValue(200);
+        final JSlider sliderCount = new JSlider(0, 10000); 
+        sliderCount.setValue(500);
         //设置滑块必须停在刻度处  
-        sliderCount.setSnapToTicks(true);  
+        // sliderCount.setSnapToTicks(true);  
         //设置绘制刻度  
         sliderCount.setPaintTicks(true);  
         //设置主、次刻度的间距  
-        sliderCount.setMajorTickSpacing(200);  
-        sliderCount.setMinorTickSpacing(50);  
+        sliderCount.setMajorTickSpacing(2000);  
+        sliderCount.setMinorTickSpacing(1000);  
         //设置绘制刻度标签，默认绘制数值刻度标签  
         sliderCount.setPaintLabels(true);  
         sliderCount.addChangeListener(countListener);
@@ -224,7 +222,8 @@ public class DDosFrame extends JFrame {
 		jlInfoStr.setText("请　求　信　息:");
 
 		jtaInfo.setEnabled(false);
-		jtaInfo.setBackground(pubColor);
+		jtaInfo.setBackground(Color.BLACK);
+		jtaInfo.setForeground(Color.black);
 		JScrollPane jspInfo = new JScrollPane(jtaInfo);
 		c.add(jspInfo);
 		jspInfo.setSize(297, 150);
@@ -246,9 +245,9 @@ public class DDosFrame extends JFrame {
 					jbRun.setEnabled(false);
 					jbStop.setEnabled(true);
 					jbExit.setEnabled(false);
-					jtaInfo.append("开始DDOS攻击：" + jtfTestRegex.getText() + StrUtils.LINE_SEPAR);
+					appendInfo("开始DDOS攻击：" + jtfTestRegex.getText() + StrUtils.LINE_SEPAR);
 					try {
-						int tCount = brDelDef.isSelected() ? 100 : sliderTCoun.getValue();
+						int tCount = brDelDef.isSelected() ? defaultCount : sliderTCoun.getValue();
 						int sCount = brDef.isSelected() ? 0 : sliderCount.getValue();
 						dos = new DDos();
 						dos.doDDos(tCount, sCount);
@@ -269,7 +268,7 @@ public class DDosFrame extends JFrame {
 				jbStop.setEnabled(false);
 				jbExit.setEnabled(true);
 				if(dos.stopDDos()) {
-					jtaInfo.append("停止成功！" + StrUtils.LINE_SEPAR);
+					appendInfo("停止成功！" + StrUtils.LINE_SEPAR);
 				}
 			}
 		});
@@ -321,6 +320,16 @@ public class DDosFrame extends JFrame {
 				return true;  
 			}  
 		});
+	}
+	
+	/**
+	 * 拼接信息
+	 * @param content
+	 */
+	public synchronized static void appendInfo(String content) {
+		jtaInfo.append(content);
+		// console.showLog(content);
+		jtaInfo.setCaretPosition(jtaInfo.getDocument().getLength());
 	}
     
 	/**
