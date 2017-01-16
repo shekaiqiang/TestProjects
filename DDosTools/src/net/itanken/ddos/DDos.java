@@ -40,7 +40,7 @@ public class DDos {
 		}
 		es.shutdown();
 */
-        BlockingQueue queue = new ArrayBlockingQueue(tCount);
+        BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(tCount);
         threadPool = new ThreadPoolExecutor(8, 20, 5, TimeUnit.SECONDS,
                 queue, new ThreadPoolExecutor.AbortPolicy());
 		for (int i = 0; i < tCount; i++) {
@@ -110,7 +110,7 @@ class Dthread implements Runnable {
 					bis.close();
 				}
 				int count = DDos.threadCount * DDos.requestCount;
-				if(DDos.count >= count) {
+				if(DDos.count >= count && DDos.requestCount != 0) {
 					DDosFrame.appendInfo(StrUtils.LINE_SEPAR + "执行完毕！共攻击 " + count + " 次。" + StrUtils.LINE_SEPAR);
 				}
 			} catch (MalformedURLException e) {

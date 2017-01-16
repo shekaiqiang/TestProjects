@@ -108,7 +108,7 @@ public class DDosFrame extends JFrame {
 				jtfTCounStr.setText("" + source.getValue());				
 			}
 		};
-		final JSlider sliderTCoun = new JSlider(0, 20); // 范围为0~20
+		final JSlider sliderTCoun = new JSlider(0, 32); // 范围为0~20
 		sliderTCoun.setValue(defaultCount); // 初始值 
 		//设置滑块必须停在刻度处  
 		sliderTCoun.setSnapToTicks(true);  
@@ -121,8 +121,8 @@ public class DDosFrame extends JFrame {
 		sliderTCoun.setPaintLabels(true);
 		sliderTCoun.addChangeListener(tCounListener);
 		c.add(sliderTCoun);
-		sliderTCoun.setSize(200, 40);
-		sliderTCoun.setLocation(220, 90);
+		sliderTCoun.setSize(410, 40);
+		sliderTCoun.setLocation(15, 90);
 		sliderTCoun.setEnabled(false);
 
 		brDelDef.addActionListener(new ActionListener() {
@@ -184,14 +184,14 @@ public class DDosFrame extends JFrame {
         //设置绘制刻度  
         sliderCount.setPaintTicks(true);  
         //设置主、次刻度的间距  
-        sliderCount.setMajorTickSpacing(2000);  
-        sliderCount.setMinorTickSpacing(1000);  
+        sliderCount.setMajorTickSpacing(1000);  
+        sliderCount.setMinorTickSpacing(500);  
         //设置绘制刻度标签，默认绘制数值刻度标签  
         sliderCount.setPaintLabels(true);  
         sliderCount.addChangeListener(countListener);
         c.add(sliderCount);
-        sliderCount.setSize(200, 40);
-        sliderCount.setLocation(220, 170);
+        sliderCount.setSize(420, 40);
+        sliderCount.setLocation(10, 170);
         sliderCount.setEnabled(false);
 
 		brDef.addActionListener(new ActionListener() {
@@ -279,7 +279,15 @@ public class DDosFrame extends JFrame {
 		// 按钮动作监听 
 		jbExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CloseUtil.exitFrame(true, ddos, "是否关闭测试工具？");
+				try {
+					CloseUtil.exit(true, ddos, true, "是否关闭测试工具？");
+				} catch (Exception e1) {
+					String ex = "";
+					if(ddos == null) {
+						ex = "nullllll";
+					}
+					JOptionPane.showMessageDialog(ddos, ex + "异常：" + e1);
+				}
 			}
 		});
 		
@@ -449,7 +457,7 @@ class SelJButton extends JButton {
 /**
  * 自定义下拉框
  */
-class SelJComboBox extends JComboBox {
+class SelJComboBox extends JComboBox<Object> {
 	private static final long serialVersionUID = 1L;
 	public SelJComboBox() {
 		super.setFont(new Font("Microsoft Yahei", Font.PLAIN, 12));
