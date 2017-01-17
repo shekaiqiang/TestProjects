@@ -8,6 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import cn.itanken.jcomp.MainFrame;
+
 public class CloseUtil {
 
 	/**
@@ -65,7 +67,7 @@ public class CloseUtil {
 		//MainFrameMainFrame.console.showLog("CloseUtil.exit() - Component名称：" + parentCom.getName());
         int result = 0;
         if(showDialog) {
-        	Icon img = new ImageIcon(CloseUtil.class.getResource("../res/wen"));
+        	Icon img = new ImageIcon(MainFrame.class.getResource("res/wen"));
         	result = JOptionPane.showConfirmDialog(parentCom, msg, "提示", JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,img);
         }
         if(result == JOptionPane.YES_OPTION) { 
