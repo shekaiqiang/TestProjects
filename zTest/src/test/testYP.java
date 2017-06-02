@@ -36,9 +36,6 @@ public class testYP {
 		code = "QryCGPSDBZ"; // 采购配送大包装查询  通过
 		inVal = "<MSG><ASK><PAR><CTM>2117052401</CTM><CCZYGH>M63</CCZYGH><CCZYXM>管理员</CCZYXM></PAR></ASK></MSG>";
 		
-		code = "QryYPPSMX"; //  药品配送明细查询  通过 
-		inVal = "<MSG><ASK><PAR><CPSDBH>17052401</CPSDBH><CTM></CTM><CCZYGH>操作员工号</CCZYGH><CCZYXM>操作员姓名</CCZYXM></PAR></ASK></MSG>";
-		
 		code = "QryYPCRCKQR"; // 查询药库药品待出库明细  药库出库确认使用 通过
 		inVal = "<MSG><ASK><PAR><CCZYXM>管理员</CCZYXM><CCZYGH>M63</CCZYGH><IKWBM>1</IKWBM><CCRD>2010C00001</CCRD></PAR></ASK></MSG>";
 		
@@ -60,6 +57,9 @@ public class testYP {
 		code = "YPGHRK"; //  药库药品购货入库
 		inVal = "<MSG><MSH><MSH.1>HT10004</MSH.1><MSH.2>drugsIntoStorage</MSH.2></MSH><ASK><PAR><Rows><Row><CDWMC></CDWMC><DSCRQ>2016-06-01 08:47:16</DSCRQ><CCRD></CCRD><IKWBM>1</IKWBM><IKCBM>16</IKCBM><CBM>0101013</CBM><CMC>人参茎叶皂苷胶囊</CMC><CGHDW>供货单位</CGHDW><IXH>1</IXH><NSL>1</NSL><CSCCJ>生产厂家</CSCCJ><DYXQ>2007-10-20 00:00:00.000</DYXQ><MPFJ>90.0</MPFJ><MGRJ>23.8261</MGRJ><MLSJ>23.8261</MLSJ><CZBLX>招标类型</CZBLX><CYPGG>规格</CYPGG><CZXDW>最小单位</CZXDW><CYKDW>药库单位</CYKDW><IHSXS>1</IHSXS><CPH></CPH><MPCPFJ>90.0</MPCPFJ><MPCGRJ>90.0</MPCGRJ><MPCLSJ>99.0</MPCLSJ><CPZWH>批准文号</CPZWH><CPCGHDW>供货单位</CPCGHDW><CPCCCH>药库单位</CPCCCH><DSJ>2017-05-31 15:33:27</DSJ><CCZYGH>M63</CCZYGH><CCZYXM>测试管理员</CCZYXM></Row></Rows></PAR></ASK></MSG>";
 
+		code = "QryYPPSMX"; //  药品配送明细查询  通过 
+		inVal = "<MSG><ASK><PAR><CPSDBH>17052401</CPSDBH><CTM></CTM><CCZYGH>操作员工号</CCZYGH><CCZYXM>操作员姓名</CCZYXM></PAR></ASK></MSG>";
+		
 		HttpClientManager.setPostUrl("http://192.168.200.24:7890/webservice1.asmx"); // 药品
 		try {
 			String res = HttpClientManager.postWebService(inVal, code, actionName);
