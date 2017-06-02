@@ -19,10 +19,12 @@ import java.util.regex.*;
  * @Revis 2016年05月25日<br>添加罗马数字Int互转
  */
 public class RegexTest extends JFrame {
+	
 	private static final long serialVersionUID = 1L;
 	public static final String title = "[TestTools]Regex · iTanken";
 	public static RegexTest rTest = new RegexTest("");
     public static ConsoleDialog console = new ConsoleDialog(title, false);
+    
 	/**
 	 * 标签 测试表达式
 	 */
