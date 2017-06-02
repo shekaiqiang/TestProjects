@@ -296,7 +296,7 @@ public class MainFrame extends JFrame {
 			if (size == 0) {
 				paneCenter.removeAll();
 				gridLayoutCenter.setRows(10);
-				paneCenter.add(new JLabel("当前服务操作方法无参数。"));
+				paneCenter.add(new JLabel("当前服务操作方法无参数，请选择其他操作方法。"));
 			} else {
 				paneCenter.removeAll();
 				gridLayoutCenter.setRows(Math.max(size, 10));
