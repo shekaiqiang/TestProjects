@@ -508,7 +508,7 @@ public class RegexTest extends JFrame {
 	public static void main(String args[]) {
 		RegexTest rt = rTest;
 		if(rt != null) {
-			console.showLog("欢迎使用iTanken正则表达式测试工具！更多信息请浏览 http://www.itanken.net/");
+			console.showLog("欢迎使用iTanken正则表达式测试工具！更多信息请浏览 https://zixizixi.cn/");
 		}
 	}
 }
@@ -528,7 +528,7 @@ class iTankenJLabel extends JLabel {
 		super.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
         		try {
-        			URI uri = new URI("http://www.itanken.net/");
+        			URI uri = new URI("https://zixizixi.cn/");
 					Desktop dtp = Desktop.getDesktop();
 					if(Desktop.isDesktopSupported() && dtp.isSupported(Desktop.Action.BROWSE)){ // 判断是否支持
 						dtp.browse(uri);
