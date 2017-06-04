@@ -297,7 +297,9 @@ public class MainFrame extends JFrame {
 				paneCenter.removeAll();
 				gridLayoutCenter.setRows(10);
 				paneCenter.add(new JLabel("当前服务操作方法无参数，请选择其他操作方法。"));
+				btnTest.setEnabled(false);
 			} else {
+				btnTest.setEnabled(true);
 				paneCenter.removeAll();
 				gridLayoutCenter.setRows(Math.max(size, 10));
 				txtParameterValues = new JTextField[size];
@@ -361,10 +363,11 @@ public class MainFrame extends JFrame {
 			for (int i = 0; i < paraNumbers; i++) {
 				if (txtParameterValues[i] != null) {
 					String value = txtParameterValues[i].getText();
+					/*
 					if (value == null || (value = value.trim()).length() == 0) {
 						JOptionPane.showMessageDialog(this, "请给参数 " + (i + 1) + " 指定一个值！", "警告", JOptionPane.WARNING_MESSAGE);
 						return;
-					}
+					}*/
 					parameterValues.addElement(value);
 				}
 			}
@@ -383,7 +386,7 @@ public class MainFrame extends JFrame {
 			// dlg.show();
 		} catch (Exception ex) {
 			timeSpan = Calendar.getInstance().getTime().getTime() - begin;
-			ex.printStackTrace();
+			// ex.printStackTrace();
 			String errMsg = ex.getMessage();
 			if(errMsg.contains("SocketTimeoutException")) {
 				ex = new Exception("调用此操作方法获取结果超时！【耗时：" + (timeSpan / 1000) + " 秒 " + (timeSpan % 1000) + " 毫秒】");
@@ -393,7 +396,9 @@ public class MainFrame extends JFrame {
 				ex = new Exception("调用失败，请求发生 SocketException 异常！" + (errMsg.contains("Connection reset") ? "【 Connection reset 】" : ""));
 			} else if(errMsg.contains("(503)Service Unavailable")) {
 				ex = new Exception("调用失败，ERROR 503：当前服务不可用！");
-			}
+			} /* else if(errMsg.contains("could not find deserializer for type")) {
+				ex = new Exception("调用失败，当前操作无请求和返回参数，请选择带有参数的操作方法再进行调用！");
+			} */
 			JOptionPane.showMessageDialog(this, /*ex.getClass().getName() + ": " + */ex.getMessage(), "调用错误", JOptionPane.ERROR_MESSAGE);
 		}
 	}
