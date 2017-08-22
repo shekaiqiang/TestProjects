@@ -33,6 +33,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		try {
+            splash("正在启动，请稍候");
 			String version = System.getProperty("java.vm.version");
 			if (version != null) {
 				// 检查 JVM 版本, 需要 1.3 或更高版本
@@ -67,4 +68,43 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+
+    private static void splash(String message) {
+        new Thread() { // 用于运行SplashScreen的线程
+            public void run() {
+                try {
+                    SplashScreen splash = SplashScreen.getSplashScreen();
+                    Graphics2D g = splash.createGraphics();
+                    g.setColor(new Color(1, 170, 237));
+                    g.setFont(new Font("Microsoft Yahei", Font.PLAIN, 12));
+                    // g.drawString(splash.getBounds().toString(), 10, 30); // SplashScreen 在屏幕的位置，大小
+                    // g.drawString(splash.getSize().toString(), 10, 50); // SplashScreen 的大小
+                    // g.drawString(splash.getImageURL().toString(), 10, 70); // 当前显示的图片
+                    
+                    String[] sNames = { "User Name", "OS Name", "App Path", "Java Version" };
+                    String[] sValue = { StrUtils.U_NAME, (StrUtils.S_NAME + " (" + StrUtils.S_ARCH + ")"), 
+                                        StrUtils.U_DIR, (StrUtils.J_VERSION + " (" + StrUtils.J_HOME + ")") };
+                    for (int i = 0; i < sNames.length; i++) {
+                        g.drawString(sNames[i] + ": " + sValue[i], 10, (210 + i * 20));
+                        splash.update(); // 刷新以上内容到屏幕
+                    }
+
+                    int fontSize = 14, showX = 10, showY = 20;
+                    g.setFont(new Font("Microsoft Yahei", Font.PLAIN, fontSize));
+                    g.drawString(message, showX, showY); // 显示信息
+                    for (int i = 0; i < 6; i++) {
+                        g.drawString("．", (showX + message.length() * fontSize + i * fontSize), showY);
+                        splash.update(); // 刷新以上内容到屏幕
+                        Thread.sleep(200);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        try {
+            Thread.sleep(2000); // 决定 SplashScreen 显示时间长短.
+        } catch (Exception e) {
+        }
+    }
 }
