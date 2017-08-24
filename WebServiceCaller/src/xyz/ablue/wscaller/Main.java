@@ -76,21 +76,21 @@ public class Main {
                     SplashScreen splash = SplashScreen.getSplashScreen();
                     Graphics2D g = splash.createGraphics();
                     g.setColor(new Color(1, 170, 237));
-                    g.setFont(new Font("Microsoft Yahei", Font.PLAIN, 12));
+                    g.setFont(new Font("Lucaida Console", Font.PLAIN, 12));
                     // g.drawString(splash.getBounds().toString(), 10, 30); // SplashScreen 在屏幕的位置，大小
                     // g.drawString(splash.getSize().toString(), 10, 50); // SplashScreen 的大小
                     // g.drawString(splash.getImageURL().toString(), 10, 70); // 当前显示的图片
                     
-                    String[] sNames = { "User Name", "OS Name", "App Path", "Java Version" };
-                    String[] sValue = { StrUtils.U_NAME, (StrUtils.S_NAME + " (" + StrUtils.S_ARCH + ")"), 
-                                        StrUtils.U_DIR, (StrUtils.J_VERSION + " (" + StrUtils.J_HOME + ")") };
+                    String[] sNames = { "Java Version", "User Name", "OS Name", "App Path" };
+                    String[] sValue = { (StrUtils.J_VERSION/*+" ("+StrUtils.J_HOME+")"*/), StrUtils.U_NAME, 
+                                        (StrUtils.S_NAME + " (" + StrUtils.S_ARCH + ")"), StrUtils.U_DIR };
                     for (int i = 0; i < sNames.length; i++) {
                         g.drawString(sNames[i] + ": " + sValue[i], 10, (210 + i * 20));
                         splash.update(); // 刷新以上内容到屏幕
                     }
 
                     int fontSize = 14, showX = 10, showY = 20;
-                    g.setFont(new Font("Microsoft Yahei", Font.PLAIN, fontSize));
+                    g.setFont(new Font("Lucaida Console", Font.PLAIN, fontSize));
                     g.drawString(message, showX, showY); // 显示信息
                     for (int i = 0; i < 6; i++) {
                         g.drawString("．", (showX + message.length() * fontSize + i * fontSize), showY);
