@@ -110,22 +110,24 @@ public class ConsoleDialog extends JFrame {
 	 */
 	private void addTextPane() {
 		try {
+            // 对话框基本样式
+            int width = 470, x = (toolkit.getScreenSize().width - width);
+            int height = 300, y = (toolkit.getScreenSize().height - height);
+            setLocation(x, y);
+            setSize(width, height);
+            setResizable(true);
+            setAlwaysOnTop(true); // 窗口始终在最前
+            
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
 			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
-			this.getContentPane().setLayout(new BorderLayout());
-			this.getContentPane().add(scrollPane);
+			getContentPane().setLayout(new BorderLayout());
+			getContentPane().add(scrollPane);
 
-			// 对话框基本样式
-			this.setIconImage(new ImageIcon(ConsoleDialog.class.getResource("../res/logo.png")).getImage());
-			int width = 470, x = (toolkit.getScreenSize().width - width);
-			int height = 300, y = (toolkit.getScreenSize().height - height);
-			this.setLocation(x, y);
-			this.setSize(width, height);
-			this.setResizable(true);
-			this.setAlwaysOnTop(true); // 窗口始终在最前
-			this.setDefaultCloseOperation(0); // 取消默认关闭事件
-			this.addWindowListener(new WindowAdapter() { // 关闭程序
+			setIconImage(new ImageIcon(ConsoleDialog.class.getResource("../res/logo.png")).getImage());
+
+            setDefaultCloseOperation(0); // 取消默认关闭事件
+			addWindowListener(new WindowAdapter() { // 关闭程序
 				public void windowClosing(WindowEvent e) {
 					if(close(0)) {
 						dialogState = false;

@@ -200,7 +200,6 @@ public class RegexTest extends JFrame {
     
     public RegexTest(String sTit) {
         super("".equals(sTit) ? title : sTit); // 程序 标题
-        splash();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -559,7 +558,7 @@ public class RegexTest extends JFrame {
         }
     }
 
-    private void splash() {
+    private static void splash() {
         new Thread() { // 用于运行SplashScreen的线程
             public void run() {
                 try {
@@ -614,9 +613,10 @@ public class RegexTest extends JFrame {
     }
 
     public static void main(String args[]) {
+        splash();
+        
         new ConsoleDialog(title, false); // 初始化并隐藏日志窗口
         new RegexTest(""); // 初始化程序
-        
 
         String[] sNames = { "User Name", "OS Name", "App Path", "Java Version" };
         String[] sValue = { StrUtils.U_NAME, (StrUtils.S_NAME + " (" + StrUtils.S_ARCH + ")"), 
