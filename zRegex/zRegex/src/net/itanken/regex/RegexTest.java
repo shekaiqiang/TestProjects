@@ -1,15 +1,43 @@
 package net.itanken.regex;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.KeyEventPostProcessor;
+import java.awt.KeyboardFocusManager;
+import java.awt.SplashScreen;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import net.itanken.regex.utils.ConsoleDialog;
 import net.itanken.regex.utils.StrUtils;
-
-import java.net.URI;
-import java.util.regex.*;
 
 /**
  * 正则表达式测试工具
@@ -22,10 +50,13 @@ import java.util.regex.*;
 public class RegexTest extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    
     public static final String title = "[TestTools]Regex · iTanken";
-    public static RegexTest rTest = new RegexTest("");
-    public static ConsoleDialog console = new ConsoleDialog(title, false);
 
+    /**
+     * 是否在进行退出操作
+     */
+    private boolean exitOpr  = false;
     /**
      * 标签 测试表达式
      */
@@ -166,14 +197,14 @@ public class RegexTest extends JFrame {
      * get container 容器
      */
     private Container c = getContentPane();
-
+    
     public RegexTest(String sTit) {
         super("".equals(sTit) ? title : sTit); // 程序 标题
         splash();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            console.showError("样式设置失败：" + e.getMessage());
+            ConsoleDialog.showError("样式设置失败：" + e.getMessage());
         }
         super.setResizable(false); // 不允许改变窗口大小
         c.setLayout(null);
@@ -273,7 +304,7 @@ public class RegexTest extends JFrame {
         jbRomanInt.setSize(30, 60);
         jbRomanInt.setLocation(146, 460);
         // ICON
-        jlTankenUri = new iTankenJLabel();
+        jlTankenUri = new iTankenJLabel(this);
         c.add(jlTankenUri);
         jlTankenUri.setSize(100, 100);
         jlTankenUri.setLocation(10, 316);
@@ -384,11 +415,11 @@ public class RegexTest extends JFrame {
 
                 p = Pattern.compile(jtfTestRegex.getText());
                 m = p.matcher(jtfTestStr.getText());
-                console.showDebug("表达式：" + jtfTestRegex.getText());
-                console.showDebug("字符串：" + jtfTestStr.getText());
+                ConsoleDialog.showDebug("表达式：" + jtfTestRegex.getText());
+                ConsoleDialog.showDebug("字符串：" + jtfTestStr.getText());
 
                 method = (String) jcbMethod.getSelectedItem();
-                console.showDebug("方　法：" + method);
+                ConsoleDialog.showDebug("方　法：" + method);
 
                 if (method.equals("find - 查找")) {
                     bRs = m.find();
@@ -407,10 +438,10 @@ public class RegexTest extends JFrame {
                     bRs = m.lookingAt();
                     jtaResult.setText(Boolean.toString(bRs));
                 } else if (method.equals("replaceAll - 替换全部")) {
-                    console.showDebug("替换为：" + jtfBeReplaced.getText());
+                    ConsoleDialog.showDebug("替换为：" + jtfBeReplaced.getText());
                     jtaResult.setText(m.replaceAll(jtfBeReplaced.getText()));
                 } else if (method.equals("replaceFirst - 替换首项")) {
-                    console.showDebug("替换为：" + jtfBeReplaced.getText());
+                    ConsoleDialog.showDebug("替换为：" + jtfBeReplaced.getText());
                     jtaResult.setText(m.replaceFirst(jtfBeReplaced.getText()));
                 }
 
@@ -434,6 +465,7 @@ public class RegexTest extends JFrame {
                                 || Integer.parseInt(sContent.trim()) > 3999))) {
                     JOptionPane.showMessageDialog(c, "只能输入1~3999的整数或罗马数字！", " iTanken·Regex提示",
                             JOptionPane.ERROR_MESSAGE, new ImageIcon(RegexTest.class.getResource("res/logo.png")));
+                    ConsoleDialog.showError("输入格式有误，只能输入1~3999的整数或罗马数字！");
                     return;
                 }
                 String sResult = "";
@@ -443,6 +475,7 @@ public class RegexTest extends JFrame {
                     sResult = String.valueOf(Ri.romanToInt(sContent.trim()));
                 }
                 jtfIntRoman.setText(sResult);
+                ConsoleDialog.showDebug(sContent.trim() + " --> " + sResult);
             }
         });
         super.setIconImage(new ImageIcon(RegexTest.class.getResource("res/logo.png")).getImage());
@@ -462,16 +495,20 @@ public class RegexTest extends JFrame {
                 if (event.getID() != KeyEvent.KEY_PRESSED) { // 按键按下事件
                     return false;
                 }
-                console.showLog("KeyCode：" + event.getKeyCode());
+                ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
                 if (event.isControlDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Ctrl + F12
-                    if (console.dialogState) {
-                        if (console.close(1)) {
-                            console.dialogState = false;
-                        }
+                    if (ConsoleDialog.dialogState) {
+                        ConsoleDialog.close(1);
+                        ConsoleDialog.showLog("按下 ‘Ctrl + F12’ 关闭调试窗口");
                     } else {
-                        console = new ConsoleDialog(title);
-                        console.showLog("按下‘Ctrl + F12’快速打开关闭调试窗口");
+                        ConsoleDialog.showConsole();
+                        ConsoleDialog.showLog("按下 ‘Ctrl + F12’ 打开调试窗口");
                     }
+                } else if(event.isControlDown() && event.getKeyCode() == KeyEvent.VK_W && !exitOpr) {
+                    ConsoleDialog.showDebug("按下 ‘Ctrl + W’ 快捷关闭程序");
+                    exitWindow(null); // Ctrl + W 关闭快捷键
+                } else {
+                    ConsoleDialog.showLog("\n");
                 }
                 return true;
             }
@@ -508,14 +545,17 @@ public class RegexTest extends JFrame {
      * @param e
      */
     private void exitWindow(WindowEvent e) {
+        exitOpr = true;
         Icon img = new ImageIcon(RegexTest.class.getResource("res/wen"));
         int result = JOptionPane.showConfirmDialog(this, "是否关闭测试工具？", " iTanken·Regex提示", JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, img);
         if (result == JOptionPane.YES_OPTION) {
             System.exit(0);
         } else if (result == JOptionPane.NO_OPTION) {
+            exitOpr = false;
             setVisible(true);
             validate();
+            ConsoleDialog.showDebug("取消关闭程序");
         }
     }
 
@@ -574,10 +614,20 @@ public class RegexTest extends JFrame {
     }
 
     public static void main(String args[]) {
-        RegexTest rt = rTest;
-        if (rt != null) {
-            console.showLog("欢迎使用iTanken正则表达式测试工具！更多信息请浏览 https://zixizixi.cn/");
+        new ConsoleDialog(title, false); // 初始化并隐藏日志窗口
+        new RegexTest(""); // 初始化程序
+        
+
+        String[] sNames = { "User Name", "OS Name", "App Path", "Java Version" };
+        String[] sValue = { StrUtils.U_NAME, (StrUtils.S_NAME + " (" + StrUtils.S_ARCH + ")"), 
+                             StrUtils.U_DIR, (StrUtils.J_VERSION + " (" + StrUtils.J_HOME + ")") };
+        for (int i = 0; i < sNames.length; i++) {
+            ConsoleDialog.showDebug(sNames[i] + ": " + sValue[i]);
         }
+        
+        ConsoleDialog.showDebug("屏幕分辨率：" + ConsoleDialog.toolkit.getScreenSize().width
+                                      + " * " + ConsoleDialog.toolkit.getScreenSize().height);
+        ConsoleDialog.showLog("欢迎使用 iTanken 正则表达式测试工具！更多信息请浏览 https://zixizixi.cn/");
     }
 }
 
@@ -590,9 +640,8 @@ public class RegexTest extends JFrame {
  */
 class iTankenJLabel extends JLabel {
     private static final long serialVersionUID = 1L;
-    private static RegexTest rt = null;
 
-    public iTankenJLabel() {
+    public iTankenJLabel(final RegexTest jframe) {
         super.setIcon(new ImageIcon(RegexTest.class.getResource("res/i")));
         super.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -601,20 +650,19 @@ class iTankenJLabel extends JLabel {
                     Desktop dtp = Desktop.getDesktop();
                     if (Desktop.isDesktopSupported() && dtp.isSupported(Desktop.Action.BROWSE)) { // 判断是否支持
                         dtp.browse(uri);
-                        if (rt == null) {
-                            rt = new RegexTest(RegexTest.title + " & RomanInt");
-                            rt.jtfRomanInt.setEditable(true);
-                            rt.jtfIntRoman.setEditable(true);
-                            rt.jbRomanInt.setEnabled(true);
-                            rt.jlRomanInt.setToolTipText(null);
-                            rt.jlRomanInt.setForeground(Color.black);
-                            rt.jlRoman.setForeground(Color.black);
-                            rt.jlInt.setForeground(Color.black);
-                            RegexTest.rTest.setVisible(false);
-                        }
+                        jframe.setTitle(RegexTest.title + " & RomanInt");
+                        jframe.jtfRomanInt.setEditable(true);
+                        jframe.jtfIntRoman.setEditable(true);
+                        jframe.jbRomanInt.setEnabled(true);
+                        jframe.jlRomanInt.setToolTipText(null);
+                        jframe.jlRomanInt.setForeground(Color.black);
+                        jframe.jlRoman.setForeground(Color.black);
+                        jframe.jlInt.setForeground(Color.black);
+                        // jframe.setVisible(false);
+                        ConsoleDialog.showLog("打开网站：" + uri.toString());
                     }
                 } catch (Exception ex) {
-                    RegexTest.console.showError(" labelUriiTanken:不能打开浏览器 - " + ex);
+                    ConsoleDialog.showError(" labelUriiTanken:不能打开浏览器 - " + ex);
                 }
             }
 

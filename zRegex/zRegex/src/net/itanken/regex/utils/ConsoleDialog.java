@@ -27,10 +27,11 @@ public class ConsoleDialog extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static JFrame dialog;
-	private static JTextPane text;
-	private static DefaultStyledDocument doc;
-	private MutableAttributeSet attr;
-	public boolean dialogState = false;
+	private static JTextPane text = new JTextPane();
+	private static DefaultStyledDocument doc = (DefaultStyledDocument) text.getStyledDocument();
+	private static MutableAttributeSet attr = new SimpleAttributeSet();
+	public static Toolkit toolkit = Toolkit.getDefaultToolkit();
+	public static boolean dialogState = false;
 
 	/**
 	 * 使用默认标题
@@ -52,10 +53,10 @@ public class ConsoleDialog extends JFrame {
 	public ConsoleDialog(String title) {
 		super();
 		dialog = this;
-		dialogState = true;
 		this.setTitle(title);
 		this.setStyle();
 		this.addTextPane();
+        dialogState = true;
 		dialog.setVisible(true); // 显示窗口
 	}
 
@@ -63,6 +64,7 @@ public class ConsoleDialog extends JFrame {
 	 * 使用自定义标题同时控制是否显示
 	 * @param title 标题
 	 * @param show 是否显示
+	 * @param jframe MainFrame
 	 */
 	public ConsoleDialog(String title, boolean show) {
 		super();
@@ -108,31 +110,28 @@ public class ConsoleDialog extends JFrame {
 	 */
 	private void addTextPane() {
 		try {
-			text = new JTextPane();
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
 			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
-			dialog.getContentPane().setLayout(new BorderLayout());
-			dialog.getContentPane().add(scrollPane);
+			this.getContentPane().setLayout(new BorderLayout());
+			this.getContentPane().add(scrollPane);
 
 			// 对话框基本样式
-			dialog.setIconImage(new ImageIcon(ConsoleDialog.class.getResource("../res/logo.png")).getImage());
-			int x = (Toolkit.getDefaultToolkit().getScreenSize().width - 475);
-			int y = (Toolkit.getDefaultToolkit().getScreenSize().height - 290);
-			dialog.setLocation(x, y);
-			dialog.setSize(470, 295);
-			dialog.setResizable(true);
-			dialog.setAlwaysOnTop(true); // 窗口始终在最前
-			dialog.setDefaultCloseOperation(0); // 取消默认关闭事件
-			dialog.addWindowListener(new WindowAdapter() { // 关闭程序
+			this.setIconImage(new ImageIcon(ConsoleDialog.class.getResource("../res/logo.png")).getImage());
+			int width = 470, x = (toolkit.getScreenSize().width - width);
+			int height = 300, y = (toolkit.getScreenSize().height - height);
+			this.setLocation(x, y);
+			this.setSize(width, height);
+			this.setResizable(true);
+			this.setAlwaysOnTop(true); // 窗口始终在最前
+			this.setDefaultCloseOperation(0); // 取消默认关闭事件
+			this.addWindowListener(new WindowAdapter() { // 关闭程序
 				public void windowClosing(WindowEvent e) {
 					if(close(0)) {
 						dialogState = false;
 					}
 				}
 			});
-			doc = (DefaultStyledDocument) text.getStyledDocument();
-			attr = new SimpleAttributeSet();
 			StyleConstants.setFontFamily(attr, "Microsoft Yahei");
 			StyleConstants.setFontSize(attr, 12);
 		} catch (Exception e) {
@@ -141,23 +140,37 @@ public class ConsoleDialog extends JFrame {
 	}
 
 	/**
-	 * 关闭控制台
+	 * 关闭控制台（隐藏）
 	 * @param e
 	 * @return
 	 */
-	public boolean close(int type) {
+	public static boolean close(int type) {
+	    boolean isClose = false;
 		if(type == 1) {
-			return CloseUtil.exit(false, dialog, false, null);
+		    isClose = CloseUtil.exit(false, dialog, false, null);
+		} else {
+		    isClose = CloseUtil.exitFrame(false, dialog, "是否关闭控制台？");
 		}
-		// return CloseUtil.exit(dialog, true, "是否关闭控制台？");
-		return CloseUtil.exitFrame(false, dialog, "是否关闭控制台？");
+		if (isClose) {
+		    dialogState = false;
+		}
+        // return CloseUtil.exit(dialog, true, "是否关闭控制台？");
+		return isClose;
+	}
+	
+	/**
+	 * 显示控制台
+	 */
+	public static void showConsole() {
+        dialogState = true;
+        dialog.setVisible(true); // 显示窗口
 	}
 	
 	/**
 	 * 显示日志信息(GREEN)
 	 * @param log 信息文本
 	 */
-	public synchronized void showLog(Object log) {
+	public synchronized static void showLog(Object log) {
 		String info = (("调试信息：".equals(log)) ? log.toString() : ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log));
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 102, 0));
@@ -173,7 +186,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示调试信息(BLUE)
 	 * @param log 信息文本
 	 */
-	public synchronized void showDebug(Object log) {
+	public synchronized static void showDebug(Object log) {
 		String debug = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(51, 0, 255));
@@ -189,7 +202,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示警告信息(ORANGE)
 	 * @param log 信息文本
 	 */
-	public synchronized void showWarn(Object log) {
+	public synchronized static void showWarn(Object log) {
 		String warn = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 102, 0));
@@ -205,7 +218,7 @@ public class ConsoleDialog extends JFrame {
 	 * 显示错误信息(RED)
 	 * @param log 信息文本
 	 */
-	public synchronized void showError(Object log) {
+	public synchronized static void showError(Object log) {
 		String error = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 0, 51));
@@ -220,7 +233,7 @@ public class ConsoleDialog extends JFrame {
 	/**
 	 * 显示时间信息(BLACK)
 	 */
-	public synchronized void showTime() {
+	public synchronized static void showTime() {
 		String time = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t");
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 0, 0));

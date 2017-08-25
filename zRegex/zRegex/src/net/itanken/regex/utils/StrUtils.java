@@ -9,16 +9,16 @@ public class StrUtils {
 	public static final String PATH_SEPAR = System.getProperty("path.separator"); // 当前系统路径分隔符(';')
 	public static final String LINE_SEPAR = System.getProperty("line.separator"); // 当前系统行分隔符('/n')
 
-	public static final String USER_NAME = System.getProperty("user.name"); // 用户账户名称
-	public static final String USER_HOME = System.getProperty("user.home"); // 用户主目录
-	public static final String USER_DIR = System.getProperty("user.dir"); // 用户当前工作目录
+	public static final String U_NAME = System.getProperty("user.name"); // 用户账户名称
+	public static final String U_HOME = System.getProperty("user.home"); // 用户主目录
+	public static final String U_DIR = System.getProperty("user.dir"); // 用户当前工作目录
 
-	public static final String JAVA_HOME = System.getProperty("java.home"); // Java安装目录
-	public static final String JAVA_VERSION = System.getProperty("java.version"); // Java版本
+	public static final String J_HOME = System.getProperty("java.home"); // Java安装目录
+	public static final String J_VERSION = System.getProperty("java.version"); // Java版本
 
-	public static final String OS_NAME = System.getProperty("os.name"); // 操作系统名称
-	public static final String OS_ARCH = System.getProperty("os.arch"); // 操作系统构架
-	public static final String OS_VERSION = System.getProperty("os.version"); // 操作系统版本
+	public static final String S_NAME = System.getProperty("os.name"); // 操作系统名称
+	public static final String S_ARCH = System.getProperty("os.arch"); // 操作系统构架
+	public static final String S_VERSION = System.getProperty("os.version"); // 操作系统版本
 
 	/**
 	 * 判断字符s是否包含字符strs中的字符

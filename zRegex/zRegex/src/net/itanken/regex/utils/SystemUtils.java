@@ -17,7 +17,7 @@ public class SystemUtils {
      * 执行外部程序
      * @param cmdStr
      */
-    public static void exeC(String[] cmdStr) {
+    public static void exeC(String[] cmdStr, RegexTest jframe) {
         Runtime rn = Runtime.getRuntime();
         Process p = null;
         try { 
@@ -30,7 +30,7 @@ public class SystemUtils {
 				error += line;
 			}
     		if(!StrUtils.isEmpty(error)) {
-    			RegexTest.console.showError(error);
+    		    ConsoleDialog.showError(error);
     		}
         } catch (Exception ex) {
         	JOptionPane.showMessageDialog (null, "命令执行失败："+ex, "错误", JOptionPane.PLAIN_MESSAGE, imageIcon);

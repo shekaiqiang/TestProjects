@@ -8,8 +8,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import net.itanken.regex.RegexTest;
-
 public class CloseUtil {
 
 	/**
@@ -64,7 +62,7 @@ public class CloseUtil {
 	 * @param msg 提示信息
 	 */
 	public static boolean exit(boolean exit, Component parentCom, boolean showDialog, Object msg) {
-		RegexTest.console.showLog("CloseUtil.exit() - Component名称：" + parentCom.getName());
+	    ConsoleDialog.showLog("CloseUtil.exit() - Component名称：" + parentCom.getName());
         int result = 0;
         if(showDialog) {
         	Icon img = new ImageIcon(CloseUtil.class.getResource("../res/wen"));
@@ -73,15 +71,15 @@ public class CloseUtil {
         if(result == JOptionPane.YES_OPTION) { 
         	if(parentCom.getName().toLowerCase().contains("frame")) { // 判断组件类型
         		if(exit) {
-        			RegexTest.console.showLog("关闭JFrame（会退出程序）");
+        		    ConsoleDialog.showLog("关闭JFrame（会退出程序）");
             		System.exit(0);
         		} else {
-        			RegexTest.console.showLog("关闭JFrame（不退出程序）");
+        		    ConsoleDialog.showLog("关闭JFrame（不退出程序）");
             		parentCom.setVisible(false);
             		((JFrame) parentCom).setDefaultCloseOperation(2); // DISPOSE_ON_CLOSE 隐藏并释放窗体
         		}
         	} else if(parentCom.getName().toLowerCase().contains("dialog")) {
-        		RegexTest.console.showLog("关闭JDialog（不退出程序）");
+        	    ConsoleDialog.showLog("关闭JDialog（不退出程序）");
         		parentCom.setVisible(false);
         		((JDialog) parentCom).setDefaultCloseOperation(2); // DISPOSE_ON_CLOSE 隐藏并释放窗体
         	} else {
