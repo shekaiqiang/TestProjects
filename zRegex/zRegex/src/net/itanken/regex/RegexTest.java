@@ -497,7 +497,7 @@ public class RegexTest extends JFrame {
                 ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
                 if (event.isControlDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Ctrl + F12
                     if (ConsoleDialog.dialogState) {
-                        ConsoleDialog.close(1);
+                        ConsoleDialog.close(true);
                         ConsoleDialog.showLog("按下 ‘Ctrl + F12’ 关闭调试窗口");
                     } else {
                         ConsoleDialog.showConsole();
@@ -571,6 +571,7 @@ public class RegexTest extends JFrame {
                     // g.drawString(splash.getSize().toString(), 10, 50); // SplashScreen 的大小
                     // g.drawString(splash.getImageURL().toString(), 10, 70); // 当前显示的图片
                     g.drawString("正在启动，请稍候", 10, 250); // 当前显示的图片
+                    splash.update();
                     for (int i = 0; i < 11; i++) {
                         g.drawString(".", (10 + 8 * fontSize + i * fontSize), 250);
                         splash.update(); // 刷新以上内容到屏幕

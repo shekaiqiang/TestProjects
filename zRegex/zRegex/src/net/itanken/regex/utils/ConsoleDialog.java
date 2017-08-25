@@ -18,6 +18,8 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import net.itanken.regex.RegexTest;
+
 /**
  * 控制台窗口
  * @author iTanken
@@ -93,8 +95,8 @@ public class ConsoleDialog extends JFrame {
         UIManager.put("Panel.font", smallFont); 	// Panel 字体
         UIManager.put("Label.font",smallFont); 		// Label 字体
         UIManager.put("ComboBox.font",bigFont); 	// combox 字体
-        UIManager.put("ComboBox.background",new Color(163,184,204));
-        UIManager.put("ComboBox.foreground",Color.WHITE);
+        // UIManager.put("ComboBox.background",new Color(163,184,204));
+        // UIManager.put("ComboBox.foreground",Color.WHITE);
         UIManager.put("Component.font",smallFont);	// component 字体
         UIManager.put("Button.font",smallFont); 	// button 字体
         UIManager.put("Button.background",new Color(163,184,204));
@@ -118,22 +120,22 @@ public class ConsoleDialog extends JFrame {
             setResizable(true);
             setAlwaysOnTop(true); // 窗口始终在最前
             
+            super.setDefaultCloseOperation(0); // 取消默认关闭事件
+            super.addWindowListener(new WindowAdapter() { // 关闭程序
+                public void windowClosing(WindowEvent e) {
+                    showLog("Console：close...");
+                    close(false);
+                }
+            });
+            
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
 			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
 			getContentPane().setLayout(new BorderLayout());
 			getContentPane().add(scrollPane);
 
-			setIconImage(new ImageIcon(ConsoleDialog.class.getResource("../res/logo.png")).getImage());
+			setIconImage(new ImageIcon(RegexTest.class.getResource("res/logo.png")).getImage());
 
-            setDefaultCloseOperation(0); // 取消默认关闭事件
-			addWindowListener(new WindowAdapter() { // 关闭程序
-				public void windowClosing(WindowEvent e) {
-					if(close(0)) {
-						dialogState = false;
-					}
-				}
-			});
 			StyleConstants.setFontFamily(attr, "Microsoft Yahei");
 			StyleConstants.setFontSize(attr, 12);
 		} catch (Exception e) {
@@ -143,14 +145,16 @@ public class ConsoleDialog extends JFrame {
 
 	/**
 	 * 关闭控制台（隐藏）
-	 * @param e
+	 * @param now
 	 * @return
 	 */
-	public static boolean close(int type) {
+	public static boolean close(boolean now) {
 	    boolean isClose = false;
-		if(type == 1) {
+		if(now) {
+		    showDebug("dialog-1: " + dialog);
 		    isClose = CloseUtil.exit(false, dialog, false, null);
 		} else {
+            showDebug("dialog-0: " + dialog);
 		    isClose = CloseUtil.exitFrame(false, dialog, "是否关闭控制台？");
 		}
 		if (isClose) {

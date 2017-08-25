@@ -92,6 +92,7 @@ public class Main {
                     int fontSize = 14, showX = 10, showY = 20;
                     g.setFont(new Font("Lucaida Console", Font.PLAIN, fontSize));
                     g.drawString(message, showX, showY); // 显示信息
+                    splash.update();
                     for (int i = 0; i < 6; i++) {
                         g.drawString("．", (showX + message.length() * fontSize + i * fontSize), showY);
                         splash.update(); // 刷新以上内容到屏幕

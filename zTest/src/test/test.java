@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -179,6 +181,14 @@ public class test {
 		systemFonts("Lucida Console");
 		
 		// instanceofTest();
+
+        try {
+            URI uri = new URI("https://zixizixi.cn/");
+            System.out.println(uri.getAuthority());
+            System.out.println(uri.toString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	public static void instanceofTest() {
