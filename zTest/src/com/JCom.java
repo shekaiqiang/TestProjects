@@ -10,25 +10,23 @@ public class JCom {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        JCom jc = new JCom();
-        jc.icDecode("");
+        icDecode();
     }
 
-    public String icDecode(String cICID) throws Exception {
+    public static void icDecode() throws Exception {
         ReleaseManager rm = new ReleaseManager();
-        IDispatch vbcom = new IDispatch(rm, "AHisYLK.JK"); // YYTYBJK.YBJK
+        IDispatch vbcom = new IDispatch(rm, "YYTYBJK.YBJK"); // YYTYBJK.YBJK // AHisYLK.JK
         System.out.println(vbcom.toString());
 
-        Object[] param = { "", "", cICID, "" };
-        vbcom.method("checked", param);
+        Object[] param = { "XXX", "<InValue><ZDBH>ZDBH001</ZDBH></InValue>" };
+        String outVal = vbcom.method("SysInit", param).toString();
+        System.out.println(outVal);
         String errInfo = (String) vbcom.get("LastError");
         if (!isEmptyStr(errInfo)) {
             throw new Exception(errInfo);
         }
-        cICID = (String) vbcom.get("Rstr");
-        
+        System.out.println(vbcom.get("Rstr").toString());
         vbcom.release();
-        return cICID;
     }
 
     public static boolean isEmptyStr(String value) {
