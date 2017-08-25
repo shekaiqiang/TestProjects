@@ -1,5 +1,6 @@
 package com.util;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -148,6 +149,7 @@ public class SensitivewordFilter {
 	}
 
 	public static void main(String[] args) {
+        long beginTime = System.nanoTime();
 		// 需要去除的特殊字符
 		String regEx = "[`~!@#$%^&amp;*()+=|{}':;',\\[\\].&lt;&gt;/?~！@#￥%……&amp;*（）——+|{}【】'；：”“’。，、？  ]";
 		SensitivewordFilter filter = new SensitivewordFilter();
@@ -163,11 +165,15 @@ public class SensitivewordFilter {
 		System.out.println(string);
 		
 		System.out.println("待检测语句字数（已去除特殊字符）：" + string.length());
-		long beginTime = System.currentTimeMillis();
+        try {
+            // Thread.sleep(1000);
+        } catch (Exception e) {
+        }
 		Set<String> set = filter.getSensitiveWord(string, 1);
-		long endTime = System.currentTimeMillis();
+		long endTime = System.nanoTime();
 		System.out.println("语句中包含敏感词的个数为：" + set.size() + "。包含：" + set);
-		System.out.println("总共消耗时间为：" + (endTime - beginTime) + " ms");
+		BigDecimal ns = new BigDecimal(endTime).subtract(new BigDecimal(beginTime)); // 纳秒
+		System.out.println("总共消耗时间为：" + ns.divide(new BigDecimal(1000000)) + " ms");
 		
 	}
 }

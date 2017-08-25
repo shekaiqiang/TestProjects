@@ -8,6 +8,7 @@ import java.net.NetworkInterface;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dom4j.Attribute;
@@ -144,16 +146,17 @@ public class test {
         System.out.println((int) 80 % 60);
         */
         // testAppendSQL();
-		/*
 		Math.random();
 		Random rand = new Random();
 		System.out.println(Math.abs(rand.nextInt()));
         System.out.println(rand.nextLong());
         System.out.println(System.currentTimeMillis()); // 毫秒数
         System.out.println(System.nanoTime()); // 纳秒级时间值
-        System.out.println(Instant.now());
-        System.out.println(Instant.parse(Instant.now().toString()));
-        
+        Instant now = Instant.now();
+        System.out.println(now);
+        System.out.println(Instant.parse(now.toString()));
+
+        /*
         String str = "1234567890qwertyuiop";
         str = str.substring(0, 10) + " - " + str.substring(10, str.length());
         System.out.println(str);
