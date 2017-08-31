@@ -103,7 +103,7 @@ public class SensitiveWordInit {
 				BufferedReader bufferedReader = new BufferedReader(read);
 				String txts = null;
 				while ((txts = bufferedReader.readLine()) != null) { // 读取文件，将文件内容放入到set中
-					String[] txt = txts.split("\\[END]");
+					String[] txt = txts.split("\\|");
 					//System.out.println(txt[0]);
 					set.add(txt[0]);
 				}
