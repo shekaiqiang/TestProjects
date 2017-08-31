@@ -183,12 +183,24 @@ public class test {
 		// instanceofTest();
 
         try {
-            URI uri = new URI("https://zixizixi.cn/");
+            URI uri = new URI("https://zixizixi.cn/test/?key=value");
             System.out.println(uri.getAuthority());
+            System.out.println(uri.getRawAuthority());
             System.out.println(uri.toString());
+            // System.out.println(uri.getFragment());
+            System.out.println(uri.getScheme());
+            System.out.println(uri.getSchemeSpecificPart());
+            System.out.println(uri.getHost());
+            // System.out.println(uri.getPort());
+            System.out.println(uri.getPath());
+            System.out.println(uri.getQuery());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        
+        System.out.println((String.valueOf((char) 127)).getBytes().length);
+        System.out.println((char) 127);
+        System.out.println(Integer.valueOf("zZA9-123".charAt(0)));
 	}
 	
 	public static void instanceofTest() {
