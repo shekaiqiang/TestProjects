@@ -1,4 +1,4 @@
-package net.wallpaper;
+package cn.zixizixi.wallpaper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,19 +20,31 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.win32.StdCallLibrary;
 
-import jp.ne.so_net.ga2.no_ji.jcom.IDispatch;
-import jp.ne.so_net.ga2.no_ji.jcom.JComException;
-import jp.ne.so_net.ga2.no_ji.jcom.ReleaseManager;
+import cn.zixizixi.wallpaper.util.ConsoleDialog;
+import cn.zixizixi.wallpaper.util.StrUtils;
 
+/**
+ * 下载并设置必应每日桌面壁纸
+ * @author Tanken·L
+ * @version 20170901
+ */
 public class SetBingImage {
     
     private static boolean debug = true;
 
+    /**
+     * 获取必应每日壁纸图片网络路径
+     * @param custom
+     * @return
+     */
     public static String getUrl(String custom) {
         String infoUrl = "http://cn.bing.com/HPImageArchive.aspx?idx=0&n=1";
+        systemPrintln("必应每日壁纸接口地址：" + infoUrl, false);
+        URL url = null;
+        URLConnection urlConn = null;
         try {
-            URL url = new URL(infoUrl);
-            URLConnection urlConn = url.openConnection();
+            url = new URL(infoUrl);
+            urlConn = url.openConnection();
             urlConn.setConnectTimeout(3000);
             BufferedReader bufRead = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
             StringBuilder strBud = new StringBuilder();
@@ -40,29 +52,38 @@ public class SetBingImage {
             while ((line = bufRead.readLine()) != null) {
                 strBud.append(line);
             }
-            systemPrintln(strBud.toString());
+            systemPrintln(strBud.toString(), false);
             Element imgEle = DocumentHelper.parseText(strBud.toString()).getRootElement();
             infoUrl = "http://cn.bing.com" + imgEle.element("image").elementText("url");
             
             if (custom != null && custom.trim() != "") {
                 infoUrl = infoUrl.replace("1366x768", custom);
             }
+            systemPrintln("壁纸图片网络地址：" + infoUrl, false);
+            return infoUrl;
         } catch (SocketTimeoutException e) {
-            systemPrintln("连接超时：" + e.getMessage());
+            systemPrintln("[TOE]请求接口连接超时：" + e.getMessage(), true);
         } catch (IOException e) {
-            systemPrintln("加载出错：" + e.getMessage());
+            systemPrintln("[IOE]请求接口加载出错：" + e.getMessage(), true);
         } catch (DocumentException e) {
-            systemPrintln("解析出错：" + e.getMessage());
+            systemPrintln("[DOE]请求接口解析出错：" + e.getMessage(), true);
+        } finally {
+            url = null;
+            urlConn = null;
         }
-        return infoUrl;
+        return null;
     }
     
-    public static String setWallpaper() {
-        String fileSepar = System.getProperty("file.separator");
-        String savePath = System.getProperty("user.home") + fileSepar + "Pictures" + fileSepar + "BingWallpaper";
-        systemPrintln(savePath);
-        String imageUrl = getUrl("1920x1080");
-        systemPrintln(imageUrl);
+    /**
+     * 保存网络图片到本地
+     * @param size
+     * @return
+     */
+    public static String downloadImage(String imageUrl) {
+        String fileSepar = StrUtils.F_SEPAR;
+        String savePath = StrUtils.U_HOME + fileSepar + "Pictures" + fileSepar + "BingWallpaper";
+        systemPrintln(savePath, false);
+        systemPrintln(imageUrl, false);
         try {
             URL url = new URL(imageUrl);
             URLConnection urlConn = url.openConnection();
@@ -76,17 +97,17 @@ public class SetBingImage {
             byte[] bs = new byte[1024];
             int len;
             String fileName = imageUrl.substring(imageUrl.indexOf("_ZH-CN") + 6, imageUrl.length());
-            String filePath = fileDir.getPath() + fileSepar + fileName;
+            String filePath = fileDir.getPath() + fileSepar + StrUtils.nowStr("yyyyMMdd_") + fileName;
             OutputStream os = new FileOutputStream(filePath);
             while ((len = is.read(bs)) != -1) {
                 os.write(bs, 0, len);
             }
             os.close();
             is.close();
-            systemPrintln(filePath);
+            systemPrintln(filePath, false);
             return filePath;
         } catch (IOException e) {
-            systemPrintln("加载出错：" + e.getMessage());
+            systemPrintln("下载图片加载出错：" + e.getMessage(), true);
         } finally {
             fileSepar = null;
             savePath = null;
@@ -97,22 +118,28 @@ public class SetBingImage {
     
     public static boolean setWinWallpaper(String filePath) {
         boolean flag = false;
-        
-        if (Platform.isWindows()) {
-            // 调用 User32 设置桌面背景
-            flag = User32.INSTANCE.SystemParametersInfoA(20, 1, filePath, 1);
+        if (StrUtils.isEmpty(filePath)) {
+            systemPrintln("图片路径为空，无法设置壁纸！", true);
         } else {
-            
+            if (Platform.isWindows()) {
+                // 调用 User32 设置桌面背景
+                flag = User32.INSTANCE.SystemParametersInfoA(20, 1, filePath, 1);
+            } else {
+                systemPrintln("目前仅能设置 Windows 系统的壁纸，其他系统只能下载保存壁纸图片！", true);
+                // TODO Other OS
+            }
         }
-        
         return flag;
     }
     
+    /**
+     * Test Method
+     * @param args
+     */
     public static void main(String[] args) {
         // debug = false;
-        String filePath = setWallpaper();
-        // jcom("User32", "SystemParametersInfoA", new Object[]{20, 1, filePath, 1});
-        
+        String imageUrl = getUrl("1920x1080");
+        String filePath = downloadImage(imageUrl);
         if (setWinWallpaper(filePath)) {
             System.out.println("设置 Windows 系统桌面背景成功！");
         } else {
@@ -120,29 +147,15 @@ public class SetBingImage {
         }
     }
     
-    public synchronized static void systemPrintln(Object obj) {
+    public synchronized static void systemPrintln(Object obj, boolean error) {
         if (debug) {
             System.out.println(obj);
-        }
-    }
-    
-    public static boolean jcom(String progID, String method, Object[] params) {
-        IDispatch inface = null;
-        try {
-            ReleaseManager rm = new ReleaseManager();
-            inface = new IDispatch(rm, progID);
-            String result = inface.method(method, params).toString();
-            System.out.println(result);
-            return true;
-        } catch (JComException e) {
-            e.printStackTrace();
-        } finally {
-            if (inface != null) {
-                inface.release();
-                inface = null;
+            if (error) {
+                ConsoleDialog.showError(obj);
+            } else {
+                ConsoleDialog.showDebug(obj);
             }
         }
-        return false;
     }
     
     public interface CLibrary extends Library {
