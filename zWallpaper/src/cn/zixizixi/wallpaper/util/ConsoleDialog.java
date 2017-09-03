@@ -130,7 +130,8 @@ public class ConsoleDialog extends JFrame {
             
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
-			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
+			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI(false));
+			 scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI(true));
 			getContentPane().setLayout(new BorderLayout());
 			getContentPane().add(scrollPane);
 
@@ -251,6 +252,23 @@ public class ConsoleDialog extends JFrame {
 		}
 	}
 
+    public synchronized static void show(Object obj, int type) {
+        System.out.println(obj);
+        switch (type) {
+		case 0:
+            ConsoleDialog.showError(obj);
+			break;
+		case 1:
+            ConsoleDialog.showLog(obj);
+			break;
+		case 2:
+            ConsoleDialog.showWarn(obj);
+			break;
+		default:
+            ConsoleDialog.showDebug(obj);
+			break;
+		}
+    }
 
 	public static void main(String[] args) {
 		new ConsoleDialog("Test");
