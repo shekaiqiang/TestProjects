@@ -58,7 +58,9 @@ public class MainFrame extends JFrame {
         super(title);
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            super.setIconImage(new ImageIcon(MainFrame.class.getResource("res/logo.png")).getImage());
+            ImageIcon icon = new ImageIcon(MainFrame.class.getResource("res/logo.png"));
+            super.setIconImage(icon.getImage());
+            ConsoleDialog.showLog("'logo.png' image load status(2=aborted; 4=errored; 8=complete): " + icon.getImageLoadStatus());
         } catch (Exception e) {
             ConsoleDialog.showError("样式设置失败：" + e.getMessage());
         }
@@ -67,7 +69,9 @@ public class MainFrame extends JFrame {
         c.setBackground(PUB_COLOR);
         imageLabel.setSize(width, height);
         imageLabel.setLocation(0, 0);
-        imageLabel.setIcon(new ImageIcon(MainFrame.class.getResource("res/loading.gif")));
+        ImageIcon icon = new ImageIcon(MainFrame.class.getResource("res/loading.gif"));
+        imageLabel.setIcon(icon);
+        ConsoleDialog.showLog("'loading.gif' image load status(2=aborted; 4=errored; 8=complete): " + icon.getImageLoadStatus());
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         imageLabel.setVerticalAlignment(JLabel.CENTER);
         c.add(imageLabel);
