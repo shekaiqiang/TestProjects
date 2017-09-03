@@ -37,7 +37,8 @@ public class PingTest {
 			frame.setSize(500, 366);
 			frame.setVisible(true);
 
-			String[] cmd = new String[] { "cmd.exe", "/c", "ping " + webSite + " -t" };
+			// String[] cmd = new String[] { "cmd.exe", "/c", "ping " + webSite + " -t" };
+			String cmd = "ifconfig";
 			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String info = "";
