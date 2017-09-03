@@ -169,7 +169,7 @@ public class MainFrame extends JFrame {
         String msg = "";
         if (filePath == null) {
             success = false;
-            msg = "下载图片失败，请检查网络或按 Ctrl + F12 查看控制台信息。";
+            msg = "下载图片失败，请检查网络或按 Alt + F12 查看控制台信息。";
         } else {
             success = true;
             ImageIcon image = new ImageIcon(filePath);

@@ -82,7 +82,7 @@ public class ConsoleDialog extends JFrame {
 	 * 设置标题
 	 */
 	public void setTitle (String title) {
-		super.setTitle("【Ctrl+F12】调试控制台：" + title);
+		super.setTitle("【Alt+F12】调试控制台：" + title);
 	}
 
 	/**
