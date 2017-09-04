@@ -79,7 +79,7 @@ public class MainFrame extends JFrame {
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		try {
 			jbInit();
-			super.setIconImage(new ImageIcon(MainFrame.class.getResource("favicon.png")).getImage());
+			super.setIconImage(new ImageIcon(MainFrame.class.getResource("/cn/zixizixi/www/res/favicon.png")).getImage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

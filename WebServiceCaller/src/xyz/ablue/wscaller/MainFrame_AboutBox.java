@@ -164,7 +164,7 @@ class iTankenJLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 
 	public iTankenJLabel(String fileName, String url, String title) {
-		super.setIcon(new ImageIcon(MainFrame_AboutBox.class.getResource(fileName)));
+		super.setIcon(new ImageIcon(MainFrame_AboutBox.class.getResource("/cn/zixizixi/www/res/" + fileName)));
 		super.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
         		try {
