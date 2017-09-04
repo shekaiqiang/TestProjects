@@ -18,3 +18,5 @@ My Projects
 >> `国内免费Web服务`： [http://www.webxml.com.cn/zh_cn/web_services.aspx](http://www.webxml.com.cn/zh_cn/web_services.aspx)
 > 
 > `5. [zRegex](https://github.com/iTanken/Projects/tree/master/zRegex/zRegex)`: 简易正则表达式测试工具
+> 
+> `6. [zWallpaper](https://github.com/iTanken/Projects/tree/master/zWallpaper)`: 设置 Windows 系统必应每日壁纸
