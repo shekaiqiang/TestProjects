@@ -27,7 +27,11 @@ import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 
-// Web Service Dynamic Invoker
+/**
+ * Web Service Dynamic Invoker
+ * 
+ * @version 20170904
+ */
 public class DynamicInvoker {
 	private Parser wsdlParser = null;
 	private Map<String, SymTabEntry> services = null;
@@ -53,14 +57,15 @@ public class DynamicInvoker {
 				service.getQName());
 
 		Call call = (Call) clientService.createCall(QName.valueOf(portName), QName.valueOf(operationName));
-		((org.apache.axis.client.Call) call).setTimeout(new Integer(15 * 1000));
+		call.setTimeout(new Integer(15 * 1000));
 
 		BindingEntry bindingEntry = getBindingEntry(serviceName, portName);
 		Operation o = getOperation(bindingEntry, operationName);
 		Parameters parameters = bindingEntry.getParameters(o);
 
 		if (parameters.returnParam != null) {
-			// QName returnType = org.apache.axis.wsdl.toJava.Utils.getXSIType(parameters.returnParam);
+			// QName returnType =
+			// org.apache.axis.wsdl.toJava.Utils.getXSIType(parameters.returnParam);
 			QName returnQName = parameters.returnParam.getQName();
 			returnName = returnQName.getLocalPart();
 		}
@@ -114,7 +119,8 @@ public class DynamicInvoker {
 	}
 
 	/**
-	 * 获取所有服务端口名 
+	 * 获取所有服务端口名
+	 * 
 	 * @param serviceName
 	 * @return
 	 */

@@ -10,7 +10,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.KeyEventPostProcessor;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -18,6 +21,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,10 +38,15 @@ import javax.swing.border.EtchedBorder;
 import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
 
+import cn.zixizixi.www.util.ConsoleDialog;
+
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+    private static MainFrame mainFrame = null;
+    private boolean exitOpr  = false;
 	DynamicInvoker invoker = null;
+	String title = null;
 	String location = null;
 	String serviceName = null;
 	String portName = null;
@@ -75,14 +84,18 @@ public class MainFrame extends JFrame {
 	JTextField txtTimes = new JTextField();
 
 	// Construct the frame
-	public MainFrame() {
-		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+	public MainFrame(String title) {
+		super.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		this.title = title;
 		try {
 			jbInit();
 			super.setIconImage(new ImageIcon(MainFrame.class.getResource("/cn/zixizixi/www/res/favicon.png")).getImage());
 		} catch (Exception e) {
+			ConsoleDialog.showError(e.getMessage());
 			e.printStackTrace();
 		}
+		keyManager();
+		mainFrame = this;
 	}
 
 	// Component initialization
@@ -100,7 +113,7 @@ public class MainFrame extends JFrame {
 		this.setResizable(false);
 		this.setSize(new Dimension(730, 500));
 		this.setState(Frame.NORMAL);
-		this.setTitle("WebService Caller - 简易 WebService 调用/测试工具");
+		this.setTitle(title);
 		paneNorth.setLayout(gridBagLayout1);
 		paneSouth.setLayout(gridLayout1);
 		btnExit.setText("退出");
@@ -184,9 +197,9 @@ public class MainFrame extends JFrame {
 	 * 在窗口关闭时退出
 	 */
 	protected void processWindowEvent(WindowEvent e) {
-		super.processWindowEvent(e);
+		// super.processWindowEvent(e);
 		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-			System.exit(0);
+			exitWindow(e);
 		}
 	}
 
@@ -195,7 +208,7 @@ public class MainFrame extends JFrame {
 	 * @param e
 	 */
 	void btnExit_actionPerformed(ActionEvent e) {
-		System.exit(0);
+		exitWindow(null);
 	}
 
 	/**
@@ -203,15 +216,15 @@ public class MainFrame extends JFrame {
 	 * @param e
 	 */
 	void btnAbout_actionPerformed(ActionEvent e) {
-		MainFrame_AboutBox dlg = new MainFrame_AboutBox(this);
+		AboutBox dlg = new AboutBox(this);
 		dlg.setVisible(true);
-		//dlg.show();
+		// Invoker.show(dlg);
 	}
 
 	void btnFind_actionPerformed(ActionEvent e) {
 		String location = txtLocation.getText();
 		if (location == null || (location = location.trim()).length() == 0) {
-			JOptionPane.showMessageDialog(this, "WSDL 地址不能为空！", "警告", JOptionPane.WARNING_MESSAGE);
+			showMsg("WSDL 地址不能为空！", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -223,7 +236,7 @@ public class MainFrame extends JFrame {
 			comboOperation.removeAllItems();
 			serviceName = portName = operationName = null;
 			if (v.size() == 0) {
-				JOptionPane.showMessageDialog(this, "当前地址找不到相关服务！", "警告", JOptionPane.WARNING_MESSAGE);
+				showMsg("当前地址找不到相关服务！", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			Object[] ss = v.toArray();
@@ -232,9 +245,9 @@ public class MainFrame extends JFrame {
 			for (int i = 0; i < len; i++) {
 				comboService.addItem((String) ss[i]);
 			}
-			// comboService.setSelectedIndex(0); // 在服务名称选择框选中第一个服务
+			// comboService.setSelectedIndex(0); // 在服务名称选择框选中第一个服务 --此处重复
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, ex.getClass().getName() + ": " + ex.getMessage(), "错误信息", JOptionPane.ERROR_MESSAGE);
+			showMsg((ex.getClass().getName() + ": " + ex.getMessage()), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -244,7 +257,6 @@ public class MainFrame extends JFrame {
 		} else if (v.size() > 1) {
 			SelectDialog dlg = new SelectDialog(this, entryName, v, "请在当前列表中选择一个" + entryName + "：");
 			dlg.setVisible(true);
-			// dlg.show();
 			return dlg.result;
 		} else {
 			return (String) v.elementAt(0);
@@ -261,7 +273,7 @@ public class MainFrame extends JFrame {
 
 			portName = selectEntry(v, "端口");
 			if (portName == null) {
-				JOptionPane.showMessageDialog(this, "在服务 " + serviceName + " 中找不到端口，请选择其他服务！", "警告", JOptionPane.WARNING_MESSAGE);
+				showMsg("在服务 " + serviceName + " 中找不到端口，请选择其他服务！", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			v = invoker.enumOperationNames(serviceName, portName);
@@ -277,7 +289,7 @@ public class MainFrame extends JFrame {
 			if(ex instanceof IllegalArgumentException) {
 				ex = new Exception("当前端口无相关服务操作，请选择其他端口！");
 			}
-			JOptionPane.showMessageDialog(this, /*ex.getClass().getName() + ": " + */ex.getMessage(), "错误信息", JOptionPane.ERROR_MESSAGE);
+			showMsg(ex.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -335,14 +347,14 @@ public class MainFrame extends JFrame {
 			validate();
 			repaint();
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, /*ex.getClass().getName() + ": " + */ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+			showMsg(ex.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	void btnTest_actionPerformed(ActionEvent e) {
 		// Begin invoking or testing
 		if (invoker == null || serviceName == null || portName == null || operationName == null || parameters == null) {
-			JOptionPane.showMessageDialog(this, "请指定 WSDL 地址/服务名称/操作方法，并在调用/测试之前对所有参数赋值！", "警告", JOptionPane.WARNING_MESSAGE);
+			showMsg("请指定 WSDL 地址/服务名称/操作方法，并在调用/测试之前对所有参数赋值！", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		int times = 0;
@@ -352,7 +364,7 @@ public class MainFrame extends JFrame {
 			times = 0;
 		}
 		if (times <= 0) {
-			JOptionPane.showMessageDialog(this, "调用次数必须大于 0 ！", "警告", JOptionPane.WARNING_MESSAGE);
+			showMsg("调用次数必须大于 0 ！", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -385,8 +397,8 @@ public class MainFrame extends JFrame {
 			dlg.setVisible(true);
 			// dlg.show();
 		} catch (Exception ex) {
+			ConsoleDialog.showError(ex);
 			timeSpan = Calendar.getInstance().getTime().getTime() - begin;
-			// ex.printStackTrace();
 			String errMsg = ex.getMessage();
 			if(errMsg.contains("SocketTimeoutException")) {
 				ex = new Exception("调用此操作方法获取结果超时！【耗时：" + (timeSpan / 1000) + " 秒 " + (timeSpan % 1000) + " 毫秒】");
@@ -399,9 +411,62 @@ public class MainFrame extends JFrame {
 			} /* else if(errMsg.contains("could not find deserializer for type")) {
 				ex = new Exception("调用失败，当前操作无请求和返回参数，请选择带有参数的操作方法再进行调用！");
 			} */
-			JOptionPane.showMessageDialog(this, /*ex.getClass().getName() + ": " + */ex.getMessage(), "调用错误", JOptionPane.ERROR_MESSAGE);
+			showMsg(ex.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	private void keyManager() {
+        KeyboardFocusManager keyManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); // 得到当前键盘事件的管理器
+        keyManager.addKeyEventPostProcessor(new KeyEventPostProcessor() {
+            public boolean postProcessKeyEvent(KeyEvent event) {
+                if (event.getID() != KeyEvent.KEY_PRESSED) { // 按键按下事件
+                    return false;
+                }
+                if (event.isAltDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Alt + F12
+                    if (ConsoleDialog.dialogState) {
+                        ConsoleDialog.close(true);
+                        ConsoleDialog.showLog("按下 ‘Alt + F12’ 关闭调试窗口");
+                    } else {
+                        ConsoleDialog.showConsole();
+                        ConsoleDialog.showLog("按下 ‘Alt + F12’ 打开调试窗口");
+                    }
+                } else if(event.isControlDown() && event.getKeyCode() == KeyEvent.VK_W && !exitOpr) {
+                    ConsoleDialog.showDebug("按下 ‘Ctrl + W’ 快捷关闭程序");
+                    exitWindow(null); // Alt + W 关闭快捷键
+                } else if (!event.isControlDown()) {
+                    ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
+                } else {
+                    // ConsoleDialog.showLog("\n");
+                }
+                return true;
+            }
+        });
+	}
+	
+    public static synchronized void showMsg(Object msgObj, int type) {
+        JOptionPane.showMessageDialog(mainFrame, msgObj, " 子兮子兮·提示", type, 
+                new ImageIcon(MainFrame.class.getResource("/cn/zixizixi/www/res/logo.png")));
+    }
+	
+    /**
+     * 关闭程序
+     * 
+     * @param e
+     */
+    private void exitWindow(WindowEvent e) {
+        exitOpr = true;
+        Icon img = new ImageIcon(MainFrame.class.getResource("/cn/zixizixi/www/res/wen"));
+        int result = JOptionPane.showConfirmDialog(this, "是否关闭应用程序？", " iTanken·WSCaller 提示", 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, img);
+        if (result == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        } else if (result == JOptionPane.NO_OPTION) {
+            exitOpr = false;
+            setVisible(true);
+            validate();
+            ConsoleDialog.showDebug("取消关闭程序");
+        }
+    }
 }
 
 class MainFrame_btnExit_actionAdapter implements java.awt.event.ActionListener {

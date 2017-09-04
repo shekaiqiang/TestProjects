@@ -21,6 +21,7 @@ public class StrUtils {
 
 	public static final String J_HOME = System.getProperty("java.home"); // Java安装目录
 	public static final String J_VERSION = System.getProperty("java.version"); // Java版本
+	public static final String JVM_VERSION = System.getProperty("java.vm.version"); // JVM 版本
 
 	public static final String S_NAME = System.getProperty("os.name"); // 操作系统名称
 	public static final String S_ARCH = System.getProperty("os.arch"); // 操作系统构架
