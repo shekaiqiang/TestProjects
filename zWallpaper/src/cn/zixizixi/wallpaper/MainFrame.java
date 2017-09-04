@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
     private static int width = 192 * 4;
     private static int height = 108 * 4;
     private static JLabel imageLabel = new JLabel();
-    private static boolean success = false;
+    private static volatile boolean success = false;
     private static MainFrame mainFrame = null;
     
     public MainFrame() {
@@ -77,7 +77,7 @@ public class MainFrame extends JFrame {
         c.add(imageLabel);
         
         super.setResizable(false); // 不允许改变窗口大小
-        super.setBounds(136, 64, width, height);
+        super.setBounds(136, 64, width, (height + 30));
         super.setVisible(true); // 显示窗口
         super.setDefaultCloseOperation(0); // 取消默认关闭
         
@@ -113,8 +113,8 @@ public class MainFrame extends JFrame {
         });
     }
     
-    public synchronized void showMsg(Object msgObj) {
-        JOptionPane.showMessageDialog(c, msgObj, " 子兮子兮·提示", JOptionPane.INFORMATION_MESSAGE, 
+    public static synchronized void showMsg(Object msgObj, int type) {
+        JOptionPane.showMessageDialog(mainFrame, msgObj, " 子兮子兮·提示", type, 
                 new ImageIcon(MainFrame.class.getResource("res/logo.png")));
     }
     
@@ -123,9 +123,7 @@ public class MainFrame extends JFrame {
         mainFrame = new MainFrame(); // 初始化应用主界面
         setWallpaper(filePath); // 设置桌面壁纸
         showBaseInfo(); // 显示系统基本信息
-        if (!success) {
-            refresh(10000); // 设置失败 10s 后重试
-        }
+        refresh(10000); // 设置失败 10s 后重试
     }
 
     private static String splash() {
@@ -185,13 +183,12 @@ public class MainFrame extends JFrame {
         }
 
         ConsoleDialog.showDebug(msg);
-        JOptionPane.showMessageDialog(mainFrame.c, msg, " 子兮子兮·提示",
-                JOptionPane.OK_OPTION, new ImageIcon(MainFrame.class.getResource("res/logo.png")));
+        showMsg(msg, JOptionPane.INFORMATION_MESSAGE);
     }
     
     private static void refresh(int ms) {
-        String s = (ms / 1000) + "s ";
         if (!success) {
+            String s = (ms / 1000) + "s ";
             ConsoleDialog.showDebug(s + "后重试...");
             Thread thread = new Thread() {
                 public void run() {
@@ -199,6 +196,7 @@ public class MainFrame extends JFrame {
                         try {
                             Thread.sleep(ms);
                         } catch (Exception e) {
+                            ConsoleDialog.showError("Thread.sleep：" + e.getMessage());
                         }
                         ConsoleDialog.showDebug("正在重试...");
 
@@ -209,13 +207,13 @@ public class MainFrame extends JFrame {
                         if (success) {
                             ConsoleDialog.showDebug("设置成功，停止重试。");
                         } else {
-                            ConsoleDialog.showDebug("设置失败，" + s + "后再次重试...");
+                            ConsoleDialog.showError("设置失败，" + s + "后再次重试...");
                         }
                     }
                 }
             };
             thread.start();
-            thread.interrupt();
+            // thread.interrupt();
         }
     }
     
