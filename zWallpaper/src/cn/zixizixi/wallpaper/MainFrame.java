@@ -113,7 +113,6 @@ public class MainFrame extends JFrame {
                 if (event.getID() != KeyEvent.KEY_PRESSED) { // 按键按下事件
                     return false;
                 }
-                ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
                 if (event.isAltDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Alt + F12
                     if (ConsoleDialog.dialogState) {
                         ConsoleDialog.close(true);
@@ -125,8 +124,10 @@ public class MainFrame extends JFrame {
                 } else if(event.isControlDown() && event.getKeyCode() == KeyEvent.VK_W && !exitOpr) {
                     ConsoleDialog.showDebug("按下 ‘Ctrl + W’ 快捷关闭程序");
                     exitWindow(null); // Alt + W 关闭快捷键
+                } else if (!event.isControlDown()) {
+                    ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
                 } else {
-                    ConsoleDialog.showLog("\n");
+                    // ConsoleDialog.showLog("\n");
                 }
                 return true;
             }
