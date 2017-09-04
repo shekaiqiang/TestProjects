@@ -37,7 +37,7 @@ public class SetBingImage {
      * @param custom
      * @return
      */
-    public static String getUrl(String custom) {
+    public static String[] getUrl(String custom) {
         String infoUrl = "http://cn.bing.com/HPImageArchive.aspx?idx=0&n=1";
         systemPrintln("必应每日壁纸接口地址：" + infoUrl, false);
         URL url = null;
@@ -53,14 +53,14 @@ public class SetBingImage {
                 strBud.append(line);
             }
             systemPrintln(strBud.toString(), false);
-            Element imgEle = DocumentHelper.parseText(strBud.toString()).getRootElement();
-            infoUrl = "http://cn.bing.com" + imgEle.element("image").elementText("url");
+            Element imgEle = DocumentHelper.parseText(strBud.toString()).getRootElement().element("image");
+            infoUrl = "http://cn.bing.com" + imgEle.elementText("url");
             
             if (custom != null && custom.trim() != "") {
                 infoUrl = infoUrl.replace("1366x768", custom);
             }
             systemPrintln("壁纸图片网络地址：" + infoUrl, false);
-            return infoUrl;
+            return new String[] {infoUrl, imgEle.elementText("copyright")};
         } catch (SocketTimeoutException e) {
             systemPrintln("[TOE]请求接口连接超时：" + e.getMessage(), true);
         } catch (IOException e) {
@@ -138,7 +138,7 @@ public class SetBingImage {
      */
     public static void main(String[] args) {
         // debug = false;
-        String imageUrl = getUrl("1920x1080");
+        String imageUrl = getUrl("1920x1080")[0];
         String filePath = downloadImage(imageUrl);
         if (setWinWallpaper(filePath)) {
             System.out.println("设置 Windows 系统桌面背景成功！");
