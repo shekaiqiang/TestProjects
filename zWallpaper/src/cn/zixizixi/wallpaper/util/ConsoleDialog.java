@@ -4,13 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -29,7 +40,7 @@ public class ConsoleDialog extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static JFrame dialog;
-	private static JTextPane text = new JTextPane();
+	private static TextAreaMenu text = new TextAreaMenu();
 	private static DefaultStyledDocument doc = (DefaultStyledDocument) text.getStyledDocument();
 	private static MutableAttributeSet attr = new SimpleAttributeSet();
 	public static Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -273,4 +284,145 @@ public class ConsoleDialog extends JFrame {
 	public static void main(String[] args) {
 		new ConsoleDialog("Test");
 	}
+}
+
+class TextAreaMenu extends JTextPane implements MouseListener {
+
+    private static final long serialVersionUID = 1L;
+    private JPopupMenu pop = null;
+    private JMenuItem all = null, copy = null, paste = null, cut = null, remove = null;
+    
+    public TextAreaMenu() {
+        super();
+        init();
+    }
+    private void init() {
+        super.addMouseListener(this);
+        pop = new JPopupMenu();
+        pop.add(all = CustomElement.SelJMenuItem("全选"));
+        pop.add(copy = CustomElement.SelJMenuItem("复制"));
+        pop.add(paste = CustomElement.SelJMenuItem("粘贴"));
+        pop.add(cut = CustomElement.SelJMenuItem("剪切"));
+        pop.add(remove = CustomElement.SelJMenuItem("清空"));
+        
+        all.setAccelerator(KeyStroke.getKeyStroke('A', InputEvent.CTRL_MASK));
+        copy.setAccelerator(KeyStroke.getKeyStroke('C', InputEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke('V', InputEvent.CTRL_MASK));  
+        cut.setAccelerator(KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK));
+        // remove.setAccelerator(KeyStroke.getKeyStroke('D', InputEvent.CTRL_MASK));
+        
+        all.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        copy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        paste.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        cut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        remove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        super.add(pop);
+    }
+    
+    /**
+     * 菜单动作
+     * @param e
+     */
+    public void action(ActionEvent e) {
+        String str = e.getActionCommand();
+        if (str.equals(all.getText())) { // 全选
+            super.selectAll();
+        } else if (str.equals(copy.getText())) { // 复制
+            super.copy();
+        } else if (str.equals(paste.getText())) { // 粘贴
+            super.paste();
+        } else if (str.equals(cut.getText())) { // 剪切
+            super.cut();
+        } else if (str.equals(remove.getText())) {
+            super.setText(""); // 清空
+        }
+    }
+    
+    public JPopupMenu getPop() {
+        return pop;
+    }
+    
+    public void setPop(JPopupMenu pop) {
+        this.pop = pop;
+    }
+    
+    /**
+     * 剪切板中是否有文本数据可供粘贴 
+     * @return true:有文本数据
+     */
+    public boolean isClipboardString() {
+        boolean hasData = false;
+        Clipboard clipboard = super.getToolkit().getSystemClipboard();
+        Transferable content = clipboard.getContents(this);
+        try {
+            if (content.getTransferData(DataFlavor.stringFlavor) instanceof String) {
+                hasData = true;
+            }
+        } catch (Exception e) {
+        }
+        return hasData;
+    }
+    
+    public boolean isCanCopy() {
+        boolean selected = false;
+        if (super.getSelectionStart() != super.getSelectionEnd()) {
+            selected = true;
+        }
+        return selected;
+    }
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            boolean hasData = super.getText().length() > 0;
+            all.setEnabled(hasData);
+            copy.setEnabled(isCanCopy());
+            paste.setEnabled(isClipboardString());
+            cut.setEnabled(isCanCopy());
+            remove.setEnabled(hasData);
+            pop.show(this, e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+    
 }

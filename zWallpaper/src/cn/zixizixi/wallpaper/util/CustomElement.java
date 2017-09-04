@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 
 import cn.zixizixi.wallpaper.MainFrame;
 
@@ -59,6 +60,13 @@ public class CustomElement {
      */
     public static JComboBox<Object> SelJComboBox() {
         return new SelJComboBox("Microsoft Yahei");
+    }
+    
+    /**
+     * 自定义菜单项目
+     */
+    public static JMenuItem SelJMenuItem(String name) {
+        return new SelJMenuItem("Microsoft Yahei", name);
     }
 }
 
@@ -135,5 +143,16 @@ class SelJComboBox extends JComboBox<Object> {
 
     public SelJComboBox(String fontFamily) {
         super.setFont(new Font(fontFamily, Font.PLAIN, 12));
+    }
+}
+
+/**
+ * 自定义菜单项目
+ */
+class SelJMenuItem extends JMenuItem {
+    private static final long serialVersionUID = 1L;
+    public SelJMenuItem(String fontFamily, String name) {
+        super(name);
+        super.setFont(new Font(fontFamily, Font.BOLD, 12));
     }
 }

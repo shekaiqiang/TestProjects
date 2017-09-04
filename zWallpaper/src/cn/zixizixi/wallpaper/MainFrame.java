@@ -51,35 +51,39 @@ public class MainFrame extends JFrame {
 
     private static int width = 192 * 4;
     private static int height = 108 * 4;
-    private static String info = "";
+    private static String info = "正在加载壁纸图片，请稍候（Alt + F12 打开控制台）...";
     private static JLabel remark = CustomElement.selJLabel();
     private static JLabel imageLabel = new JLabel();
     private static volatile boolean success = false;
     private static MainFrame mainFrame = null;
+    private static Class<MainFrame> mainClass = MainFrame.class;
     
     public MainFrame() {
         super(title);
+        ImageIcon icon = null;
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            ImageIcon icon = new ImageIcon(MainFrame.class.getResource("res/logo.png"));
+            
+            icon = new ImageIcon(mainClass.getResource("res/logo.png"));
             super.setIconImage(icon.getImage());
-            ConsoleDialog.showLog("'logo.png' image load status(2=aborted; 4=errored; 8=complete): " + icon.getImageLoadStatus());
+            showImageLoadStatus("logo.png", icon);
+            
+            icon = new ImageIcon(mainClass.getResource("res/loading.gif"));
+            showImageLoadStatus("loading.gif", icon);
         } catch (Exception e) {
             ConsoleDialog.showError("样式设置失败：" + e.getMessage());
         }
 
         c.setLayout(null);
         c.setBackground(PUB_COLOR);
-        imageLabel.setSize(width, height);
         imageLabel.setLocation(0, 0);
-        ImageIcon icon = new ImageIcon(MainFrame.class.getResource("res/loading.gif"));
-        imageLabel.setIcon(icon);
-        ConsoleDialog.showLog("'loading.gif' image load status(2=aborted; 4=errored; 8=complete): " + icon.getImageLoadStatus());
+        imageLabel.setSize(width, height);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         imageLabel.setVerticalAlignment(JLabel.CENTER);
+        imageLabel.setIcon(icon);
         c.add(imageLabel);
         
-        JLabel line = new JLabel("—————————————————————————— 必应每日壁纸 —————————————————————————— ");
+        JLabel line = new JLabel("———————————————————————— 必应 " + StrUtils.nowDate() + " 壁纸 ———————————————————————— ");
         line.setSize(width, 16);
         line.setLocation(0, height);
         line.setHorizontalAlignment(JLabel.CENTER);
@@ -131,7 +135,7 @@ public class MainFrame extends JFrame {
     
     public static synchronized void showMsg(Object msgObj, int type) {
         JOptionPane.showMessageDialog(mainFrame, msgObj, " 子兮子兮·提示", type, 
-                new ImageIcon(MainFrame.class.getResource("res/logo.png")));
+                new ImageIcon(mainClass.getResource("res/logo.png")));
     }
     
     public static void main(String[] args) {
@@ -259,6 +263,16 @@ public class MainFrame extends JFrame {
         ConsoleDialog.showLog("欢迎使用 iTanken 设置每日必应桌面壁纸工具！更多信息请浏览 https://zixizixi.cn/");
     }
     
+    private static void showImageLoadStatus(String imgName, ImageIcon icon) {
+        try {
+            ConsoleDialog.showLog("'" + imgName + "' image load status(2=aborted; 4=errored; 8=complete): "
+                    + icon.getImageLoadStatus() + "\n - ( " +  icon.getDescription() + " - "
+                    + icon.getIconWidth() + "*"+ icon.getIconHeight() + " )");
+        } catch (Exception e) {
+            ConsoleDialog.showError(e.getMessage());
+        }
+    }
+    
     /**
      * 关闭程序
      * 
@@ -266,7 +280,7 @@ public class MainFrame extends JFrame {
      */
     private void exitWindow(WindowEvent e) {
         exitOpr = true;
-        Icon img = new ImageIcon(MainFrame.class.getResource("res/wen"));
+        Icon img = new ImageIcon(mainClass.getResource("res/wen"));
         int result = JOptionPane.showConfirmDialog(this, "是否关闭应用程序？", " iTanken·iWallpaper 提示", 
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, img);
         if (result == JOptionPane.YES_OPTION) {
