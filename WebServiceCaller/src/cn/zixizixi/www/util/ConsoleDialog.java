@@ -10,6 +10,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -142,7 +143,8 @@ public class ConsoleDialog extends JFrame {
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
 			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI(false));
-			 scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI(true));
+			scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI(true));
+			scrollPane.setRowHeaderView(new LineNumberHeaderView());
 			getContentPane().setLayout(new BorderLayout());
 			getContentPane().add(scrollPane);
 
@@ -264,7 +266,6 @@ public class ConsoleDialog extends JFrame {
 	}
 
     public synchronized static void show(Object obj, int type) {
-        System.out.println(obj);
         switch (type) {
 		case 0:
             ConsoleDialog.showError(obj);
@@ -290,7 +291,7 @@ class TextAreaMenu extends JTextPane implements MouseListener {
 
     private static final long serialVersionUID = 1L;
     private JPopupMenu pop = null;
-    private JMenuItem all = null, copy = null, paste = null, cut = null, remove = null;
+    private JMenuItem all = null, copy = null, paste = null, cut = null, clear = null;
     
     public TextAreaMenu() {
         super();
@@ -303,13 +304,13 @@ class TextAreaMenu extends JTextPane implements MouseListener {
         pop.add(copy = CustomElement.SelJMenuItem("复制"));
         pop.add(paste = CustomElement.SelJMenuItem("粘贴"));
         pop.add(cut = CustomElement.SelJMenuItem("剪切"));
-        pop.add(remove = CustomElement.SelJMenuItem("清空"));
-        
-        all.setAccelerator(KeyStroke.getKeyStroke('A', InputEvent.CTRL_MASK));
-        copy.setAccelerator(KeyStroke.getKeyStroke('C', InputEvent.CTRL_MASK));
-        paste.setAccelerator(KeyStroke.getKeyStroke('V', InputEvent.CTRL_MASK));  
-        cut.setAccelerator(KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK));
-        // remove.setAccelerator(KeyStroke.getKeyStroke('D', InputEvent.CTRL_MASK));
+        pop.add(clear = CustomElement.SelJMenuItem("清空"));
+
+        all.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));  
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        clear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
         
         all.addActionListener(new ActionListener() {
             @Override
@@ -335,7 +336,7 @@ class TextAreaMenu extends JTextPane implements MouseListener {
                 action(e);
             }
         });
-        remove.addActionListener(new ActionListener() {
+        clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 action(e);
@@ -358,8 +359,8 @@ class TextAreaMenu extends JTextPane implements MouseListener {
             super.paste();
         } else if (str.equals(cut.getText())) { // 剪切
             super.cut();
-        } else if (str.equals(remove.getText())) {
-            super.setText(""); // 清空
+        } else if (str.equals(clear.getText())) { // 清空
+            super.setText(new String());
         }
     }
     
@@ -408,7 +409,7 @@ class TextAreaMenu extends JTextPane implements MouseListener {
             copy.setEnabled(isCanCopy());
             paste.setEnabled(isClipboardString());
             cut.setEnabled(isCanCopy());
-            remove.setEnabled(hasData);
+            clear.setEnabled(hasData);
             pop.show(this, e.getX(), e.getY());
         }
     }
