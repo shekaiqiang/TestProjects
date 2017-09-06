@@ -4,13 +4,25 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -29,7 +41,7 @@ public class ConsoleDialog extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static JFrame dialog;
-	private static JTextPane text = new JTextPane();
+	private static TextAreaMenu text = new TextAreaMenu();
 	private static DefaultStyledDocument doc = (DefaultStyledDocument) text.getStyledDocument();
 	private static MutableAttributeSet attr = new SimpleAttributeSet();
 	public static Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -82,7 +94,7 @@ public class ConsoleDialog extends JFrame {
 	 * 设置标题
 	 */
 	public void setTitle (String title) {
-		super.setTitle("【Ctrl+F12】调试控制台：" + title);
+		super.setTitle("【Alt+F12】调试控制台：" + title);
 	}
 
 	/**
@@ -113,8 +125,8 @@ public class ConsoleDialog extends JFrame {
 	private void addTextPane() {
 		try {
             // 对话框基本样式
-            int width = 470, x = (toolkit.getScreenSize().width - width);
-            int height = 300, y = (toolkit.getScreenSize().height - height);
+            int width = 500, x = (toolkit.getScreenSize().width - width);
+            int height = 320, y = (toolkit.getScreenSize().height - height - 30);
             setLocation(x, y);
             setSize(width, height);
             setResizable(true);
@@ -130,7 +142,8 @@ public class ConsoleDialog extends JFrame {
             
 	        text.setBackground(new Color(199,237,204)); // 设置背景色为护眼色
 			JScrollPane scrollPane = new JScrollPane(text);
-			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
+			scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI(false));
+			scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI(true));
 			getContentPane().setLayout(new BorderLayout());
 			getContentPane().add(scrollPane);
 
@@ -177,11 +190,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showLog(Object log) {
-		String info = (("调试信息：".equals(log)) ? log.toString() : ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log));
+		String info = (("调试信息：".equals(log)) ? log.toString() : ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log));
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 102, 0));
 			doc.insertString(doc.getLength(), info, attr);
-			doc.insertString(doc.getLength(), StrUtils.LINE_SEPAR, null);
+			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
 			text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -193,11 +206,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showDebug(Object log) {
-		String debug = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
+		String debug = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(51, 0, 255));
 			doc.insertString(doc.getLength(), debug, attr);
-			doc.insertString(doc.getLength(), StrUtils.LINE_SEPAR, null);
+			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
 			text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -209,11 +222,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showWarn(Object log) {
-		String warn = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
+		String warn = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 102, 0));
 			doc.insertString(doc.getLength(), warn, attr);
-			doc.insertString(doc.getLength(), StrUtils.LINE_SEPAR, null);
+			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
 			text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -225,11 +238,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showError(Object log) {
-		String error = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t" + log);
+		String error = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 0, 51));
 			doc.insertString(doc.getLength(), error, attr);
-			doc.insertString(doc.getLength(), StrUtils.LINE_SEPAR, null);
+			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
 			text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -240,19 +253,166 @@ public class ConsoleDialog extends JFrame {
 	 * 显示时间信息(BLACK)
 	 */
 	public synchronized static void showTime() {
-		String time = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.LINE_SEPAR + "\t");
+		String time = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t");
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 0, 0));
 			doc.insertString(doc.getLength(), time, attr);
-			doc.insertString(doc.getLength(), StrUtils.LINE_SEPAR, null);
+			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
 			text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
 	}
 
+    public synchronized static void show(Object obj, int type) {
+        switch (type) {
+		case 0:
+            ConsoleDialog.showError(obj);
+			break;
+		case 1:
+            ConsoleDialog.showLog(obj);
+			break;
+		case 2:
+            ConsoleDialog.showWarn(obj);
+			break;
+		default:
+            ConsoleDialog.showDebug(obj);
+			break;
+		}
+    }
 
 	public static void main(String[] args) {
 		new ConsoleDialog("Test");
 	}
+}
+
+class TextAreaMenu extends JTextPane implements MouseListener {
+
+    private static final long serialVersionUID = 1L;
+    private JPopupMenu pop = null;
+    private JMenuItem all = null, copy = null, paste = null, cut = null, clear = null;
+    
+    public TextAreaMenu() {
+        super();
+        init();
+    }
+    private void init() {
+        super.addMouseListener(this);
+        pop = new JPopupMenu();
+        pop.add(all = CustomElement.SelJMenuItem("全选"));
+        pop.add(copy = CustomElement.SelJMenuItem("复制"));
+        pop.add(paste = CustomElement.SelJMenuItem("粘贴"));
+        pop.add(cut = CustomElement.SelJMenuItem("剪切"));
+        pop.add(clear = CustomElement.SelJMenuItem("清空"));
+
+        all.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));  
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        clear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+        
+        all.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        copy.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        paste.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        cut.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        clear.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                action(e);
+            }
+        });
+        super.add(pop);
+    }
+    
+    /**
+     * 菜单动作
+     * @param e
+     */
+    public void action(ActionEvent e) {
+        String str = e.getActionCommand();
+        if (str.equals(all.getText())) { // 全选
+            super.selectAll();
+        } else if (str.equals(copy.getText())) { // 复制
+            super.copy();
+        } else if (str.equals(paste.getText())) { // 粘贴
+            super.paste();
+        } else if (str.equals(cut.getText())) { // 剪切
+            super.cut();
+        } else if (str.equals(clear.getText())) { // 清空
+            super.setText(new String());
+        }
+    }
+    
+    public JPopupMenu getPop() {
+        return pop;
+    }
+    
+    public void setPop(JPopupMenu pop) {
+        this.pop = pop;
+    }
+    
+    /**
+     * 剪切板中是否有文本数据可供粘贴 
+     * @return true:有文本数据
+     */
+    public boolean isClipboardString() {
+        boolean hasData = false;
+        Clipboard clipboard = super.getToolkit().getSystemClipboard();
+        Transferable content = clipboard.getContents(this);
+        try {
+            if (content.getTransferData(DataFlavor.stringFlavor) instanceof String) {
+                hasData = true;
+            }
+        } catch (Exception e) {
+        }
+        return hasData;
+    }
+    
+    public boolean isCanCopy() {
+        boolean selected = false;
+        if (super.getSelectionStart() != super.getSelectionEnd()) {
+            selected = true;
+        }
+        return selected;
+    }
+    
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            boolean hasData = super.getText().length() > 0;
+            all.setEnabled(hasData);
+            copy.setEnabled(isCanCopy());
+            paste.setEnabled(isClipboardString());
+            cut.setEnabled(isCanCopy());
+            clear.setEnabled(hasData);
+            pop.show(this, e.getX(), e.getY());
+        }
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
+    
 }

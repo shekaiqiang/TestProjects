@@ -125,8 +125,8 @@ public class ConsoleDialog extends JFrame {
 	private void addTextPane() {
 		try {
             // 对话框基本样式
-            int width = 470, x = (toolkit.getScreenSize().width - width);
-            int height = 300, y = (toolkit.getScreenSize().height - height);
+            int width = 500, x = (toolkit.getScreenSize().width - width);
+            int height = 320, y = (toolkit.getScreenSize().height - height - 30);
             setLocation(x, y);
             setSize(width, height);
             setResizable(true);

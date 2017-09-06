@@ -22,8 +22,10 @@ public class LineNumberHeaderView extends JComponent {
 	public final Color DEFAULT_BACKGROUD = new Color(228, 228, 228);
 	public final Color DEFAULT_FOREGROUD = Color.BLACK;
 	public final int nHEIGHT = Integer.MAX_VALUE - 1000000;
-	public final int WIDTH = 40;
 	public final int MARGIN = 5;
+	private int width = 50;
+	private int limit = 9999;
+	private int overTimes = 1;
 	private int lineHeight;
 	private int fontLineHeight;
 	private int currentRowWidth;
@@ -33,7 +35,9 @@ public class LineNumberHeaderView extends JComponent {
 		this.setFont(DEFAULT_FONT);
 		super.setForeground(DEFAULT_FOREGROUD);
 		super.setBackground(DEFAULT_BACKGROUD);
-		super.setPreferredSize(new Dimension(WIDTH, 9999 * this.getLineHeight())); // 行号做多显示 9999 行
+		lineHeight = this.getLineHeight();
+		fontLineHeight = (limit * lineHeight + 6);
+		super.setPreferredSize(new Dimension(width, fontLineHeight));
 	}
 	
 	@Override
@@ -57,27 +61,32 @@ public class LineNumberHeaderView extends JComponent {
 	}
 	
 	public int getStartOffset() {
-		return 4;
+		return 1;
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		int nlineHeight = this.getLineHeight();
 		int startOffset = this.getStartOffset();
 		Rectangle drawHere = g.getClipBounds();
 		g.setColor(getBackground());
 		g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
 		g.setColor(getForeground());
-		int startLineNum = (drawHere.y / nlineHeight) + 1;
-		int endLineNum = startLineNum + (drawHere.height / nlineHeight);
-		int start = (drawHere.y / nlineHeight) * nlineHeight + nlineHeight - startOffset;
+		g.setFont(new Font("Consolas", Font.PLAIN, 12));
+		int startLineNum = (drawHere.y / lineHeight) + 1;
+		int endLineNum = startLineNum + (drawHere.height / lineHeight);
+		int start = (drawHere.y / lineHeight) * lineHeight + lineHeight - startOffset;
 		for (int i = startLineNum; i <= endLineNum; ++i) {
 			String lineNum = String.valueOf(i);
 			// int width = fontMetrics.stringWidth(lineNum);
 			// System.out.printf("%s - %d - %d\n", lineNum, start, nlineHeight);
 			g.drawString(lineNum + " ", MARGIN + currentRowWidth, start);
-			start += nlineHeight;
+			start += lineHeight;
+
+			if ((limit * overTimes) == i) {
+				// System.out.printf("limit=%d; overLimit=%d; i=%d;\n", limit, overTimes, i);
+				overTimes += 1;
+				super.setPreferredSize(new Dimension(width, (fontLineHeight * overTimes)));
+			}
 		}
-		// super.setPreferredSize(new Dimension(WIDTH, endLineNum));
 	}
 }

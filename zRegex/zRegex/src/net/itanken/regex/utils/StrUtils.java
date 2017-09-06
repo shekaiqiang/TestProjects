@@ -4,10 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StrUtils {
-	
-	public static final String FILE_SEPAR = System.getProperty("file.separator"); //当前系统 文件分隔符('\')
-	public static final String PATH_SEPAR = System.getProperty("path.separator"); // 当前系统路径分隔符(';')
-	public static final String LINE_SEPAR = System.getProperty("line.separator"); // 当前系统行分隔符('/n')
+
+	public static final String F_SEPAR = System.getProperty("file.separator"); //当前系统 文件分隔符('\')
+	public static final String P_SEPAR = System.getProperty("path.separator"); // 当前系统路径分隔符(';')
+	public static final String L_SEPAR = System.getProperty("line.separator"); // 当前系统行分隔符('/n')
 
 	public static final String U_NAME = System.getProperty("user.name"); // 用户账户名称
 	public static final String U_HOME = System.getProperty("user.home"); // 用户主目录
