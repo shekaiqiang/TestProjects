@@ -495,13 +495,13 @@ public class RegexTest extends JFrame {
                     return false;
                 }
                 ConsoleDialog.showLog("KeyCode：" + event.getKeyCode());
-                if (event.isControlDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Ctrl + F12
+                if (event.isAltDown() && event.getKeyCode() == KeyEvent.VK_F12) { // 按下 Alt + F12
                     if (ConsoleDialog.dialogState) {
                         ConsoleDialog.close(true);
-                        ConsoleDialog.showLog("按下 ‘Ctrl + F12’ 关闭调试窗口");
+                        ConsoleDialog.showLog("按下 ‘Alt + F12’ 关闭调试窗口");
                     } else {
                         ConsoleDialog.showConsole();
-                        ConsoleDialog.showLog("按下 ‘Ctrl + F12’ 打开调试窗口");
+                        ConsoleDialog.showLog("按下 ‘Alt + F12’ 打开调试窗口");
                     }
                 } else if(event.isControlDown() && event.getKeyCode() == KeyEvent.VK_W && !exitOpr) {
                     ConsoleDialog.showDebug("按下 ‘Ctrl + W’ 快捷关闭程序");

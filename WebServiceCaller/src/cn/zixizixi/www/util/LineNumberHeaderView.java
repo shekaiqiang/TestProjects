@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 public class LineNumberHeaderView extends JComponent {
 
 	private static final long serialVersionUID = 1L;
-	private final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
+	private final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 	public final Color DEFAULT_BACKGROUD = new Color(228, 228, 228);
 	public final Color DEFAULT_FOREGROUD = Color.BLACK;
 	public final int nHEIGHT = Integer.MAX_VALUE - 1000000;
@@ -48,10 +48,14 @@ public class LineNumberHeaderView extends JComponent {
 	}
 	
 	public int getLineHeight() {
+		return 17;
+		/*
+		ConsoleDialog.showDebug("lineHeight: " + lineHeight + " - fontLineHeight: " + fontLineHeight);
 		if (lineHeight == 0) {
 			return fontLineHeight;
 		}
 		return lineHeight;
+		*/
 	}
 	
 	public void setLineHeight(int lineHeight) {
@@ -61,20 +65,20 @@ public class LineNumberHeaderView extends JComponent {
 	}
 	
 	public int getStartOffset() {
-		return 1;
+		return 4;
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		int startOffset = this.getStartOffset();
+		// int startOffset = this.getStartOffset();
 		Rectangle drawHere = g.getClipBounds();
 		g.setColor(getBackground());
 		g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
 		g.setColor(getForeground());
-		g.setFont(new Font("Consolas", Font.PLAIN, 12));
+		g.setFont(DEFAULT_FONT);
 		int startLineNum = (drawHere.y / lineHeight) + 1;
 		int endLineNum = startLineNum + (drawHere.height / lineHeight);
-		int start = (drawHere.y / lineHeight) * lineHeight + lineHeight - startOffset;
+		int start = (drawHere.y / lineHeight) * lineHeight + lineHeight;// - startOffset;
 		for (int i = startLineNum; i <= endLineNum; ++i) {
 			String lineNum = String.valueOf(i);
 			// int width = fontMetrics.stringWidth(lineNum);

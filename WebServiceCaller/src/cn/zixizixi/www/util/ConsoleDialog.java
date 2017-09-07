@@ -40,6 +40,8 @@ import xyz.ablue.wscaller.MainFrame;
 public class ConsoleDialog extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private static final String INDENT = "　　";
+	private static final String LSEPAR = "\r\n";
 	private static JFrame dialog;
 	private static TextAreaMenu text = new TextAreaMenu();
 	private static DefaultStyledDocument doc = (DefaultStyledDocument) text.getStyledDocument();
@@ -152,6 +154,7 @@ public class ConsoleDialog extends JFrame {
 
 			StyleConstants.setFontFamily(attr, "Microsoft Yahei");
 			StyleConstants.setFontSize(attr, 12);
+			StyleConstants.setLineSpacing(attr, 0F);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -191,12 +194,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showLog(Object log) {
-		String info = (("调试信息：".equals(log)) ? log.toString() : ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log));
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 102, 0));
-			doc.insertString(doc.getLength(), info, attr);
-			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
-			text.setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(), ("【" + StrUtils.nowDateTime() + "】" + LSEPAR), attr);
+			doc.insertString(doc.getLength(), (INDENT + log.toString() + LSEPAR), attr);
+			//text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -207,12 +209,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showDebug(Object log) {
-		String debug = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(51, 0, 255));
-			doc.insertString(doc.getLength(), debug, attr);
-			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
-			text.setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(), ("【" + StrUtils.nowDateTime() + "】" + LSEPAR), attr);
+			doc.insertString(doc.getLength(), (INDENT + log.toString() + LSEPAR), attr);
+			//text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -223,12 +224,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showWarn(Object log) {
-		String warn = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 102, 0));
-			doc.insertString(doc.getLength(), warn, attr);
-			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
-			text.setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(), ("【" + StrUtils.nowDateTime() + "】" + LSEPAR), attr);
+			doc.insertString(doc.getLength(), (INDENT + log.toString() + LSEPAR), attr);
+			//text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -239,12 +239,11 @@ public class ConsoleDialog extends JFrame {
 	 * @param log 信息文本
 	 */
 	public synchronized static void showError(Object log) {
-		String error = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t" + log);
 		try {
 			StyleConstants.setForeground(attr, new Color(255, 0, 51));
-			doc.insertString(doc.getLength(), error, attr);
-			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
-			text.setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(), ("【" + StrUtils.nowDateTime() + "】" + LSEPAR), attr);
+			doc.insertString(doc.getLength(), (INDENT + log.toString() + LSEPAR), attr);
+			//text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -254,12 +253,12 @@ public class ConsoleDialog extends JFrame {
 	 * 显示时间信息(BLACK)
 	 */
 	public synchronized static void showTime() {
-		String time = ("【" + StrUtils.nowDateTime() + "】" + StrUtils.L_SEPAR + "\t");
+		String time = ("【" + StrUtils.nowDateTime() + "】" + LSEPAR + INDENT);
 		try {
 			StyleConstants.setForeground(attr, new Color(0, 0, 0));
 			doc.insertString(doc.getLength(), time, attr);
-			doc.insertString(doc.getLength(), StrUtils.L_SEPAR, null);
-			text.setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(), LSEPAR, attr);
+			//text.setCaretPosition(doc.getLength());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -284,6 +283,16 @@ public class ConsoleDialog extends JFrame {
 
 	public static void main(String[] args) {
 		new ConsoleDialog("Test");
+		int count = 5;
+		for (int i = 0; i < 10; i++) {
+			ConsoleDialog.show("测试 ConsoleDialog 信息控制台【" + i + "】", i);
+			if (i == 9 && count > 1) {
+				i = -1;
+				count--;
+			} else if (i == 4) {
+				ConsoleDialog.showError(new Exception("异常信息"));
+			}
+		}
 	}
 }
 
