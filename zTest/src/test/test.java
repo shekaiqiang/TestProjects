@@ -201,6 +201,8 @@ public class test {
         System.out.println((String.valueOf((char) 127)).getBytes().length);
         System.out.println((char) 127);
         System.out.println(Integer.valueOf("zZA9-123".charAt(0)));
+        System.out.println(new StringBuffer().toString() + "-");
+        System.out.println(Float.valueOf(0).toString());
 	}
 	
 	public static void instanceofTest() {
