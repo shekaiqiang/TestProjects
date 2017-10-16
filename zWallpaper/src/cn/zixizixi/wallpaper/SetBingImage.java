@@ -122,7 +122,7 @@ public class SetBingImage {
             systemPrintln("图片路径为空，无法设置壁纸！", true);
         } else {
             if (Platform.isWindows()) {
-                // 调用 User32 设置桌面背景
+                // 调用 User32 设置桌面背景 10(Fill), 6(Fit), 2(Stretch), 0(Tile), 0(Center)
                 flag = User32.INSTANCE.SystemParametersInfoA(20, 1, filePath, 1);
             } else {
                 systemPrintln("目前仅能设置 Windows 系统的壁纸，其他系统只能下载保存壁纸图片！", true);
@@ -133,18 +133,32 @@ public class SetBingImage {
     }
     
     /**
+     * 获取当前壁纸图片路径
+     * @return
+     */
+    public static String getWinWallpaper() {
+        String imgPath = "";
+        if (User32.INSTANCE.SystemParametersInfoA(0x0073, 200, imgPath, 0)) {
+            return imgPath;
+        }
+        return null;
+    }
+    
+    /**
      * Test Method
      * @param args
      */
     public static void main(String[] args) {
         // debug = false;
+        System.out.println("path: " + getWinWallpaper());
+        /*
         String imageUrl = getUrl("1920x1080")[0];
         String filePath = downloadImage(imageUrl);
         if (setWinWallpaper(filePath)) {
             System.out.println("设置 Windows 系统桌面背景成功！");
         } else {
             System.out.println("设置桌面背景失败，图片位置：" + filePath);
-        }
+        }*/
     }
     
     public synchronized static void systemPrintln(Object obj, boolean error) {
@@ -172,9 +186,9 @@ public class SetBingImage {
          * @param uAction 要设置的参数: 
          *      6(设置视窗的大小) / 17(开关屏保程序) / 13, 24(改变桌面图标水平和垂直间距) / 15(设置屏保等待时间) / 
          *      20(设置桌面背景墙纸) / 93(开关鼠标轨迹) / 97 (开关Ctrl+Alt+Del窗口)
-         * @param uParam 参数
-         * @param lpvParam 参数
-         * @param fuWinIni 
+         * @param uParam 设置的参数
+         * @param lpvParam 设置或返回的参数
+         * @param fuWinIni 设置的参数
          * @return 
          */
         public boolean SystemParametersInfoA(int uAction, int uParam, String lpvParam, int fuWinIni);
