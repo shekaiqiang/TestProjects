@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.regex.*;
 
+@SuppressWarnings("rawtypes")
 public class RegexTest extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
@@ -26,7 +27,7 @@ public class RegexTest extends JFrame {
 	private JTextField jtfEnd; // 输入框 结束
 	private JTextField jtfGroupCount; // 输入框 组数
 	private JTextArea jtaGroup; // 输入框 组
-	private JComboBox jcbMethod; // 列表框 方法
+    private JComboBox jcbMethod; // 列表框 方法
 	private JButton jbRun; // 按钮 进行测试
 	private JScrollPane jspResult; // 存放 TextArea的Pane, 加滚动条
 	private JScrollPane jspGroup; // 存放 TextArea的Pane, 加滚动条
@@ -37,7 +38,8 @@ public class RegexTest extends JFrame {
 	private Pattern p; // 表达式 模板
 	private Matcher m; // 表达式 匹配器
 
-	public RegexTest() {
+	@SuppressWarnings("unchecked")
+    public RegexTest() {
 		super("Regex测试·iTanken"); // 程序 标题
 		setResizable(false); // 不允许改变窗口大小
 		// get container
@@ -248,6 +250,7 @@ class SelJButton extends JButton {
 	}
 }
 
+@SuppressWarnings("rawtypes")
 class SelJComboBox extends JComboBox {
 	private static final long serialVersionUID = 1L;
 	public SelJComboBox() {

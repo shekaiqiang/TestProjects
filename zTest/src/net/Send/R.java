@@ -52,6 +52,7 @@ public class R implements Runnable {
 			while (flag) {
 				new Thread(new R(server.accept())).start(); // 阻塞
 			}
+			server.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

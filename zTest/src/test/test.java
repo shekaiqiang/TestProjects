@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -30,9 +31,14 @@ import org.dom4j.Element;
 
 public class test {
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		String rowStr = "";
+        String rowStr = "";
+		try {
+		    rowStr = "10:56";
+            float strToFloat = Float.valueOf(rowStr);  //Float.parseFloat(rowStr);
+            System.out.println(strToFloat);
+        } catch (NumberFormatException e1) {
+        }
 		// rowStr = "<Row CSYLSH=\"1605000008\" IXH=\"1\" CZYH=\"16050726\"
 		// CXM=\"何开云\" CKSBM=\"\" CKSMC=\"新院手足外科\" CWPBM=\"00151\"
 		// CWPMC=\"大清创(or)\" CXDDH=\"1605000163\" CBLSH=\"1605000675\"
@@ -134,12 +140,13 @@ public class test {
 		// strToTable("YXHIS..TBZSDLDZPZ..诊室登录地址配置表", "[CZSBM]", "", "[CZSBM], [CZSMC], [CIP]:[varchar](20), [varchar](50), [varchar](50):诊室编码, 诊室名称, IP地址");
 		// strToTable("YXHIS..TBZDMZZXKS..门诊中心科室字典表", "[IZXBM]", "", "[IZXBM], [CZXMC], [CPYM], [CKSBM], [CKSMC], [CBZ], [BENABLE]:[int], [varchar](50), [varchar](50), [varchar](1000), [varchar](1000), [varchar](500), [bit]:中心编码, 中心名称, 拼音码, 科室编码, 科室名称, 备注, 是否可用");
 		// getTables();
-		/*
+		*/
 		System.out.println("1|2|3".replaceAll("\\|", ", "));
 		String str = "`~!@#$%^&*()-_=+,.<>/?:;\\|[]{}\"''";
         System.out.println(str);
-		str = StringEscapeUtils.escapeSql(str); // 防止 SQL 注入
+		str = StringEscapeUtils.escapeSql(str); // 防止 SQL 注入 -> .replaceAll("'", "''")
         System.out.println(str);
+        /*
         testDate();
 		testAutoTaskSQL();
 		System.out.println(getMinDiff("08:00:00", "09:59:00"));
@@ -203,6 +210,23 @@ public class test {
         System.out.println(Integer.valueOf("zZA9-123".charAt(0)));
         System.out.println(new StringBuffer().toString() + "-");
         System.out.println(Float.valueOf(0).toString());
+        String url = "/YxCheck/modules/sign/?CGH=1819";
+        url = url.substring(url.indexOf("YxCheck/") + 7, url.length());
+        System.out.println(url);
+        System.out.println(nowStr("YYMMdd"));
+        
+        List<?> list = new ArrayList<String>();
+        System.out.println("list.size : " + list.size());
+        /*
+        try {
+            Document ele = DocumentHelper.parseText("<MSG><Rows><Row i=\"1\" /><Row i=\"2\" /><Row i=\"3\" /></Rows></MSG>");
+            System.out.println(ele.asXML());
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }*/
+        System.out.println("|1|6|9|10|12|".indexOf("|12|"));
+        System.out.println("|1|6|9|10|12|".indexOf("|13|"));
+        System.out.println("|1|6|9|10|12|".indexOf(("|" + 1 + "|")));
 	}
 	
 	public static void instanceofTest() {

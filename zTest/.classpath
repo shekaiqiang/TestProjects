@@ -16,9 +16,10 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/JUnit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.14-20160307.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="D:/Libraries/commons-lang-2.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.4.0.jar" sourcepath="D:/Libraries/jna-src-full-4.4.0.zip"/>
 	<classpathentry kind="lib" path="lib/jna-platform-4.4.0.jar" sourcepath="D:/Libraries/jna-src-full-4.4.0.zip"/>
+	<classpathentry kind="lib" path="lib/jaxen-1.1-beta-6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

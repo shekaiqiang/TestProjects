@@ -2,12 +2,10 @@ package test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -15,6 +13,7 @@ import java.util.LinkedList;
 
 import com.FileLog;;
 
+@SuppressWarnings("unused")
 public class ZTest {
 
 	public static void main(String[] args) throws Exception {
