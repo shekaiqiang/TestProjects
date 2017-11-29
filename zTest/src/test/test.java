@@ -3,19 +3,26 @@ package test;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +38,7 @@ import org.dom4j.Element;
 
 public class test {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         String rowStr = "";
 		try {
 		    rowStr = "10:56";
@@ -215,6 +222,9 @@ public class test {
         System.out.println(url);
         System.out.println(nowStr("YYMMdd"));
         
+        url = "[192.168.200.71].AHISTER";
+        System.out.println(url.substring(0, url.indexOf("].") + 2));
+        
         List<?> list = new ArrayList<String>();
         System.out.println("list.size : " + list.size());
         /*
@@ -227,7 +237,106 @@ public class test {
         System.out.println("|1|6|9|10|12|".indexOf("|12|"));
         System.out.println("|1|6|9|10|12|".indexOf("|13|"));
         System.out.println("|1|6|9|10|12|".indexOf(("|" + 1 + "|")));
+
+        System.out.println(LocalDate.now().getYear());
+        System.out.println("2017-10-26".substring(0, 4));
+        
+        String tmp1 = "1";
+        String tmp2 = "2";
+        tmp1 = tmp2 = null;
+        System.out.println(tmp1 + "-" + tmp2);
+        
+        // Get LocalDateTime object
+        LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println(localDateTime);
+        // 当月天数
+        System.out.println("The number of days available for this month: " + localDateTime.getMonth().length(true));
+        // 英文月份名称
+        System.out.println("What is the month name? :: " + localDateTime.getMonth().name());
+        // 日期加减运算
+        System.out.println(localDateTime.plus(2, ChronoUnit.DAYS));
+        System.out.println(localDateTime.minus(2, ChronoUnit.DAYS));
+        
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS E");
+        System.out.println(LocalDateTime.now().format(fmt));
+        
+        List<String> strList = new ArrayList<String>();
+        System.out.println(strList instanceof List<?>);
+        System.out.println(strList.isEmpty());
+        
+        Integer[] strs = {1, 2};
+        System.out.println(strs.getClass().isArray());
+        testObj(strs);
+        
+        System.out.println(new String[]{});
+        
+        System.out.println(isExists("123456", "1230456"));
+        
+        System.out.println("NULL " + null);
+        
+        test test = new test();
+        test.invokeMethod();
+        
+        String dbName = "YXHIS_HT..";
+        System.out.println(dbName.substring(dbName.indexOf("_"), dbName.indexOf(".")));
+        
+        Date datetime = strToDate("HH:mm", "22:00");
+        Date begin = strToDate("HH:mm:ss", "20:00:00");
+        Date end = strToDate("yyyy-MM-dd HH:mm:ss", nowStr("yyyy-MM-dd ") + "00:00:00");
+        System.out.println(begin.compareTo(datetime));
+        System.out.println(end.compareTo(datetime));
+        
+        System.out.println("0123456789".substring(1));
+        
+        System.out.println(StringEscapeUtils.escapeXml("<>.&"));
+        System.out.println(org.apache.commons.text.StringEscapeUtils.escapeXml10("&"));
+        try {
+            System.out.println(DocumentHelper.parseText("<MSG/>").asXML());
+        } catch (DocumentException e) {
+        }
 	}
+    
+    public static Date strToDate(String inFmt, String inStr) {
+        Date datetime = null;
+        try {
+            datetime = new SimpleDateFormat(inFmt).parse(inStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return datetime;
+    }
+    
+    public void invokeMethod() {
+        try {
+            Method method = getClass().getMethod("inVokeMethod", new Class[] { String.class, String.class });
+            method.invoke(this, "1", "2");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void inVokeMethod(String str1, String str2) {
+        System.out.println(str1 + " - " + str2);
+    }
+    
+    /**
+     * 判断 strParent 是否包含 strChild 中的所有字符
+     * @param strChild 
+     * @param strParent 
+     * @return
+     */
+    public static boolean isExists(String strChild, String strParent) {
+        for (int i = 0; i < strChild.length(); i++) {
+            if (!strParent.toUpperCase().contains(strChild.toUpperCase().substring(i, i + 1))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static void testObj(Object obj) {
+        System.out.println(obj);
+    }
 	
 	public static void instanceofTest() {
 	    try {
@@ -276,8 +385,6 @@ public class test {
         System.out.println(System.getProperty("os.name", "")); // 操作系统名称 ('Windows 10')
         System.out.println(System.getProperty("os.arch", "")); // 操作系统构架 ('x86')
         System.out.println(System.getProperty("os.version", "")); // 操作系统版本 ('10.0')
-        
-
 	}
 	
 	public static void testInetAddress() {
@@ -575,6 +682,7 @@ public class test {
         checkTime.forEach(item -> {
             System.out.println(item.get("DKSSJ"));
         });
+        
 	}
 
 	/**
