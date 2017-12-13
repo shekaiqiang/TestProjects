@@ -4,7 +4,6 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -30,10 +29,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 
 import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
@@ -52,7 +53,7 @@ public class MainFrame extends JFrame {
 	String portName = null;
 	String operationName = null;
 	Parameters parameters = null;
-	JTextField[] txtParameterValues = null;
+	JTextArea[] txtParameterValues = null;
 
 	JPanel contentPane;
 	Border border1;
@@ -79,7 +80,6 @@ public class MainFrame extends JFrame {
 	GridLayout gridLayout1 = new GridLayout();
 	Border border3;
 	JPanel paneCenter = new JPanel();
-	GridLayout gridLayoutCenter = new GridLayout();
 	Border border4;
 	JTextField txtTimes = new JTextField();
 
@@ -153,11 +153,7 @@ public class MainFrame extends JFrame {
 		jLabel7.setText("");
 		gridLayout1.setColumns(7);
 		gridLayout1.setHgap(10);
-		paneCenter.setLayout(gridLayoutCenter);
-		gridLayoutCenter.setColumns(1);
-		gridLayoutCenter.setHgap(3);
-		gridLayoutCenter.setRows(1);
-		gridLayoutCenter.setVgap(3);
+		paneCenter.setLayout(new VFlowLayout(VFlowLayout.TOP));
 		paneCenter.setBackground(Color.white);
 		paneCenter.setBorder(border4);
 		txtTimes.setText("1");
@@ -307,26 +303,24 @@ public class MainFrame extends JFrame {
 			int size = v.size();
 			if (size == 0) {
 				paneCenter.removeAll();
-				gridLayoutCenter.setRows(10);
 				paneCenter.add(new JLabel("当前服务操作方法无参数，请选择其他操作方法。"));
 				btnTest.setEnabled(false);
 			} else {
 				btnTest.setEnabled(true);
 				paneCenter.removeAll();
-				gridLayoutCenter.setRows(Math.max(size, 10));
-				txtParameterValues = new JTextField[size];
+				txtParameterValues = new JTextArea[size];
 				for (int i = 0; i < size; i++) {
 					Parameter para = (Parameter) v.elementAt(i);
 					JPanel p = new JPanel();
-					p.setLayout(new FlowLayout(FlowLayout.LEFT));
+					//p.setLayout(new FlowLayout(FlowLayout.LEFT));
 					p.setBorder(new EtchedBorder());
 					p.add(new JLabel("参数 " + (i + 1) + ":"));
-					JTextField tf = new JTextField("", 20);
+					JTextField tf = new JTextField("", 12);
 					tf.setEditable(false);
 					tf.setText(para.getQName().getLocalPart());
 					p.add(tf);
 					p.add(new JLabel("类型:"));
-					tf = new JTextField("", 9);
+					tf = new JTextField("", 6);
 					tf.setEditable(false);
 
 					String wsdlType = para.getType().getQName().getLocalPart();
@@ -336,7 +330,10 @@ public class MainFrame extends JFrame {
 					if (para.getMode() != Parameter.OUT) {
 						// for IN and INOUT parameters
 						p.add(new JLabel("值:"));
-						txtParameterValues[i] = new JTextField("", 20);
+						JTextArea txtArea =  new JTextArea("", 1, 32);
+                        txtArea.setMinimumSize(new Dimension(355, 22));
+						txtArea.setBorder(new LineBorder(Color.lightGray, 1, false));
+						txtParameterValues[i] = txtArea;
 						p.add(txtParameterValues[i]);
 					} else {
 						txtParameterValues[i] = null;

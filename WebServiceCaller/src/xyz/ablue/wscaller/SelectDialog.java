@@ -40,19 +40,19 @@ public class SelectDialog extends JDialog {
 			parentSize = getParent().getSize();
 		}
 		Dimension size = getSize();
-		setLocation(parentLocation.x + parentSize.width / 2 - size.width / 2, parentLocation.y + parentSize.height / 2 - size.height / 2);
+        super.setBounds(parentLocation.x + parentSize.width / 2 - size.width / 2, parentLocation.y + parentSize.height / 2 - size.height / 2, 300, 240);
 	}
 
 	public SelectDialog(Frame parent, String title, Vector<?> candidates, String message) {
 		super(parent, title);
-		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		super.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		this.parent = parent;
 		this.candidates = candidates;
 		this.message = message;
 		try {
-			jbInit();
-			pack();
-			centerDialog();
+		    this.jbInit();
+			// pack();
+		    this.centerDialog();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
