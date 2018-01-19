@@ -84,11 +84,11 @@ public class MainFrame extends JFrame {
 	JTextField txtTimes = new JTextField();
 
 	// Construct the frame
-	public MainFrame(String title) {
+	public MainFrame(String title, String wsdl) {
 		super.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		this.title = title;
 		try {
-			jbInit();
+			this.jbInit(wsdl);
 			super.setIconImage(new ImageIcon(MainFrame.class.getResource("/cn/zixizixi/www/res/favicon.png")).getImage());
 		} catch (Exception e) {
 			ConsoleDialog.showError(e.getMessage());
@@ -99,7 +99,7 @@ public class MainFrame extends JFrame {
 	}
 
 	// Component initialization
-	private void jbInit() throws Exception {
+	private void jbInit(String wsdl) throws Exception {
 		contentPane = (JPanel) this.getContentPane();
 		border1 = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		border2 = BorderFactory.createEmptyBorder(5, 5, 5, 5);
@@ -132,7 +132,7 @@ public class MainFrame extends JFrame {
 		jLabel3.setText("WSDL 地址：");
 		txtLocation.setMinimumSize(new Dimension(350, 22));
 		txtLocation.setPreferredSize(new Dimension(350, 22));
-		txtLocation.setText("");
+		txtLocation.setText(wsdl);
 		btnFind.setText("查找服务");
 		btnFind.addActionListener(new MainFrame_btnFind_actionAdapter(this));
 		borderLayout1.setHgap(5);

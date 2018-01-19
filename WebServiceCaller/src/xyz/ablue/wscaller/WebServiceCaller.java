@@ -10,6 +10,12 @@ import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+
 import cn.zixizixi.www.util.ConsoleDialog;
 import cn.zixizixi.www.util.StrUtils;
 
@@ -17,9 +23,10 @@ public class WebServiceCaller {
 	public static Font pubFont = new Font("Microsoft Yahei", Font.PLAIN, 12);
 	boolean packFrame = false;
 	private static String title = "简易 WebService 调用/测试工具 - WebService Caller";
+	private static String wsdl = "";
 	// Construct the application
 	public WebServiceCaller() {
-		MainFrame frame = new MainFrame(title);
+		MainFrame frame = new MainFrame(title, wsdl);
 		// Validate frames that have preset sizes
 		// Pack frames that have useful preferred size info, e.g. from their
 		// layout
@@ -80,6 +87,17 @@ public class WebServiceCaller {
 			} catch (Exception e) {
 				ConsoleDialog.showError(e);
 			}
+	        try {
+	            final Options options = new Options();
+	            options.addOption("w", "wsdl", true, "WebService WSDL location.");
+	            final CommandLineParser commandLineParser = new PosixParser();
+	            CommandLine commandLine = commandLineParser.parse(options, args);
+	            if (commandLine.hasOption("w")) {
+	                wsdl = commandLine.getOptionValue("w");
+	            }
+	        } catch (final ParseException e) {
+	        }
+	        
 			new WebServiceCaller();
 		} catch (Exception e) {
 			ConsoleDialog.showError(e);
