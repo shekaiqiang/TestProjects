@@ -19,6 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+
 import cn.zixizixi.wallpaper.util.ConsoleDialog;
 import cn.zixizixi.wallpaper.util.CustomElement;
 import cn.zixizixi.wallpaper.util.StrUtils;
@@ -31,11 +37,11 @@ import cn.zixizixi.wallpaper.util.StrUtils;
 public class MainFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
-
+    private static boolean visible = true;
     /**
      * 是否在进行退出操作
      */
-    private boolean exitOpr  = false;
+    private boolean exitOpr = false;
     
     /**
      * get container 容器
@@ -98,7 +104,7 @@ public class MainFrame extends JFrame {
         
         super.setResizable(false); // 不允许改变窗口大小
         super.setBounds(136, 64, width, (height + 100));
-        super.setVisible(true); // 显示窗口
+        super.setVisible(visible); // 显示窗口
         super.setDefaultCloseOperation(0); // 取消默认关闭
         
         super.addWindowListener(new WindowAdapter() {
@@ -140,6 +146,16 @@ public class MainFrame extends JFrame {
     }
     
     public static void main(String[] args) {
+        try {
+            final Options options = new Options();
+            options.addOption("h", "hide", false, "Don't show this window.");
+            final CommandLineParser commandLineParser = new PosixParser();
+            CommandLine commandLine = commandLineParser.parse(options, args);
+            visible = !commandLine.hasOption("h");
+        } catch (final ParseException e) {
+            visible = true;
+        }
+        
         String filePath = splash(); // 显示启动界面并获取图片
         mainFrame = new MainFrame(); // 初始化应用主界面
         setWallpaper(filePath); // 设置桌面壁纸
@@ -217,10 +233,13 @@ public class MainFrame extends JFrame {
 
         ConsoleDialog.showDebug(msg);
         showMsg(msg, JOptionPane.INFORMATION_MESSAGE);
+        if (!visible) {
+            System.exit(0);
+        }
     }
     
     private static void refresh(int ms) {
-        if (!success) {
+        if (!success && visible) {
             String s = (ms / 1000) + "s ";
             ConsoleDialog.showDebug(s + "后重试...");
             Thread thread = new Thread() {
