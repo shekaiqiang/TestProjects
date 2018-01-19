@@ -4,6 +4,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -312,15 +313,15 @@ public class MainFrame extends JFrame {
 				for (int i = 0; i < size; i++) {
 					Parameter para = (Parameter) v.elementAt(i);
 					JPanel p = new JPanel();
-					//p.setLayout(new FlowLayout(FlowLayout.LEFT));
+					p.setLayout(new FlowLayout(FlowLayout.LEFT));
 					p.setBorder(new EtchedBorder());
 					p.add(new JLabel("参数 " + (i + 1) + ":"));
-					JTextField tf = new JTextField("", 12);
+					JTextField tf = new JTextField("", 15);
 					tf.setEditable(false);
 					tf.setText(para.getQName().getLocalPart());
 					p.add(tf);
 					p.add(new JLabel("类型:"));
-					tf = new JTextField("", 6);
+					tf = new JTextField("", 8);
 					tf.setEditable(false);
 
 					String wsdlType = para.getType().getQName().getLocalPart();
@@ -330,7 +331,7 @@ public class MainFrame extends JFrame {
 					if (para.getMode() != Parameter.OUT) {
 						// for IN and INOUT parameters
 						p.add(new JLabel("值:"));
-						JTextArea txtArea =  new JTextArea("", 1, 32);
+						JTextArea txtArea =  new JTextArea("", 1, 27);
                         txtArea.setMinimumSize(new Dimension(355, 22));
 						txtArea.setBorder(new LineBorder(Color.lightGray, 1, false));
 						txtParameterValues[i] = txtArea;
