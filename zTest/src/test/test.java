@@ -1,5 +1,6 @@
 package test;
 
+import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -149,11 +150,11 @@ public class test {
 		// getTables();
 		*/
 		System.out.println("1|2|3".replaceAll("\\|", ", "));
+        /*
 		String str = "`~!@#$%^&*()-_=+,.<>/?:;\\|[]{}\"''";
         System.out.println(str);
 		str = StringEscapeUtils.escapeSql(str); // 防止 SQL 注入 -> .replaceAll("'", "''")
         System.out.println(str);
-        /*
         testDate();
 		testAutoTaskSQL();
 		System.out.println(getMinDiff("08:00:00", "09:59:00"));
@@ -288,12 +289,29 @@ public class test {
         
         System.out.println("0123456789".substring(1));
         
-        System.out.println(StringEscapeUtils.escapeXml("<>.&"));
-        System.out.println(org.apache.commons.text.StringEscapeUtils.escapeXml10("&"));
+        System.out.println(System.getProperty("os.name") + System.getProperty("user.home"));
+        String xmlStr = "<xml version=\"1.0\"><element attribute=\"value\" /></xml><MSG><MSH><MSH.3>9999</MSH.3></MSH></MSG>";
+        xmlStr = StringEscapeUtils.escapeXml10(xmlStr);
+        System.out.println(xmlStr);
+        System.out.println(StringEscapeUtils.unescapeXml(xmlStr));
         try {
-            System.out.println(DocumentHelper.parseText("<MSG/>").asXML());
+            System.out.println(DocumentHelper.parseText("<MSG>").asXML());
         } catch (DocumentException e) {
+            System.out.println(e.getLocalizedMessage());
         }
+        System.out.println(Color.DARK_GRAY.getRGB());
+        System.out.println(Color.BLACK.getRGB());
+        System.out.println(0xFF000000);
+        System.out.println(Color.WHITE.getRGB());
+        System.out.println(0xFFFFFFFF);
+        
+        File file = new File("");
+        System.out.println("file：" + file);
+        System.out.println(System.currentTimeMillis());
+        
+        String data = "?<MSG/>";
+        System.out.println("?: " + ("?<MSG/>".startsWith("?")));
+        System.out.println(data.substring(1));
 	}
     
     public static Date strToDate(String inFmt, String inStr) {
