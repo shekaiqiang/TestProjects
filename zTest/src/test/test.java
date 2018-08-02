@@ -111,7 +111,7 @@ public class test {
 		// testWebService();
 		// System.out.println(rowStr);
 		// testSQL();
-		// System.out.println(Arrays.toString("| | | ".split("\\|")));
+		System.out.println(Arrays.toString("| | | ".split("\\|")));
 		/*
 		String[] params = { "0", "0" }; // [0]:是否写备注;[1]:是否写停止时间
 		params[0] = "1"; // 默认不写备注
